@@ -1,5 +1,6 @@
 package server;
 
+import ComponentGUI.WhiteBoardComponent;
 import remote.iClient;
 import remote.iServer;
 
@@ -44,20 +45,19 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     }
 
     @Override
-    public Void broadCastChat(String t) throws RemoteException {
+    public void broadCastChat(String username, String t) throws RemoteException {
         // notify every user to update their chatbox
         for (User u:userList){
             if (checkApproved(u)) {
-                //u.client.addMessage(t);
+                u.client.local_sendChatMessage(username, t);
             }
         }
-        return null;
     }
 
     @Override
-    public void broadDrawRectangle() throws RemoteException {
+    public void broadDrawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException {
         for (User u:userList){
-            u.client.local_drawRectangle();
+            u.client.local_drawShape(mode, x1, y1, x2, y2);
         }
     }
 

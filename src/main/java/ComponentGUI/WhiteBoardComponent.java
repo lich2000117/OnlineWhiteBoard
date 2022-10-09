@@ -1,20 +1,27 @@
 package ComponentGUI;
 
+import client.ClientRMI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class WhiteBoardComponent extends JPanel {
+    private ClientRMI clientRMI;
     private ArrayList<Shape> shapeList = new ArrayList<>();
-    private drawMode mode = drawMode.DEFAULT;
+    private drawMode dMode = drawMode.DEFAULT;
+    private shapeMode sMode = shapeMode.RECTANGLE;
 
     private int x1,y1,x2,y2 = 0;
 
-    public WhiteBoardComponent(){
+    public WhiteBoardComponent(ClientRMI clientRMI){
+        this.clientRMI = clientRMI;
         this.setPreferredSize(new Dimension(500, 500));
 
         addMouseListener(new MouseAdapter() {
@@ -27,9 +34,8 @@ public class WhiteBoardComponent extends JPanel {
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
 
-                switch (mode){
-                    case ELLIPSE:
-                    case RECTANGLE:
+                switch (dMode){
+                    case SHAPE:
                         x1 = e.getX();
                         y1 = e.getY();
                 }
@@ -39,21 +45,16 @@ public class WhiteBoardComponent extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
 
-                switch (mode){
-                    case ELLIPSE:
-                    case RECTANGLE:
+                switch (dMode){
+                    case SHAPE:
                         x2 = e.getX();
                         y2 = e.getY();
-                        break;
-                }
 
-                switch (mode){
-                    case ELLIPSE:
-                        drawEllipse(x1, y1, x2, y2);
-                        repaint();
-                        break;
-                    case RECTANGLE:
-                        drawRectangle(x1, y1, x2, y2);
+                        try {
+                            clientRMI.request_drawShape(sMode, x1, y1, x2, y2);
+                        } catch (RemoteException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         repaint();
                         break;
                 }
@@ -61,25 +62,33 @@ public class WhiteBoardComponent extends JPanel {
         });
     }
 
-    public void setMode(drawMode mode){
-        this.mode = mode;
+    public void setDrawMode(drawMode mode){
+        this.dMode = mode;
     }
-    public void drawRectangle(int x1, int y1, int x2, int y2){
+    public void setShapeMode(shapeMode mode){this.sMode = mode;}
+
+    public void drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2){
         int true_x1 = Math.min(x1,x2);
         int true_y1 = Math.min(y1,y2);
         int width=Math.abs(x1-x2);
         int height=Math.abs(y1-y2);
 
-        shapeList.add(new Rectangle2D.Float(true_x1, true_y1, width, height));
-    }
+        switch (mode){
+            case RECTANGLE:
+                shapeList.add(new Rectangle2D.Float(true_x1, true_y1, width, height));
+                break;
+            case ELLIPSE:
+                shapeList.add(new Ellipse2D.Float(true_x1, true_y1, width, height));
+                break;
+            case TRIANGLE:
+                //shapeList.add(new .Float(true_x1, true_y1, width, height));
+                break;
+            case LINE:
+                shapeList.add(new Line2D.Float(x1, y1, x2, y2));
+                break;
+        }
 
-    public void drawEllipse(int x1, int y1, int x2, int y2){
-        int true_x1 = Math.min(x1,x2);
-        int true_y1 = Math.min(y1,y2);
-        int width=Math.abs(x1-x2);
-        int height=Math.abs(y1-y2);
-
-        shapeList.add(new Ellipse2D.Float(true_x1, true_y1, width, height));
+        repaint();
     }
 
     public void paint(Graphics g){
@@ -94,8 +103,14 @@ public class WhiteBoardComponent extends JPanel {
 
     public enum drawMode{
         DEFAULT,
+        SHAPE,
+        FREE
+    }
+
+    public enum shapeMode{
         RECTANGLE,
         ELLIPSE,
-        FREE
+        TRIANGLE,
+        LINE
     }
 }

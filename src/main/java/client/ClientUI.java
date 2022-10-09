@@ -1,5 +1,6 @@
 package client;
 
+import ComponentGUI.WhiteBoardComponent;
 import remote.iClient;
 import remote.iServer;
 
@@ -13,9 +14,13 @@ public class ClientUI {
         this.frame = new MyFrame(clientRMI);
     }
 
-    public void drawRectangle(){
-        this.frame.drawRectangle_Board();
+    public void drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2){
+        this.frame.getWhiteBoard().drawShape(mode, x1, y1, x2, y2);
         System.out.println("Draw on Board");
+    }
+
+    public void sendChatMessage(String username, String message){
+        this.frame.getChatPanel().addMessage(username, message);
     }
 
     public void addMessageToChat(String m){

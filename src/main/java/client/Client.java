@@ -59,7 +59,7 @@ public class Client extends UnicastRemoteObject implements Serializable{
             System.out.println("connected to whiteboard RMI!");
 
             // 2. register self RMI apis to naming server and // 3. set up RMI UI
-            ClientRMI clientRMI = (ClientRMI) new ClientRMI(whiteboardRMI); // 3. set up RMI UI and run gui
+            ClientRMI clientRMI = (ClientRMI) new ClientRMI(whiteboardRMI, userName); // 3. set up RMI UI and run gui
             SELF_RMI_ADDRESS = "rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.thisRMIName;
             Naming.rebind(SELF_RMI_ADDRESS, clientRMI);
             // 4. add current Client to Whiteboard RMI server so whiteboard has access to call method defined in RMI.

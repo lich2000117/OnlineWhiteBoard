@@ -1,11 +1,11 @@
 package client;
 
+import ComponentGUI.WhiteBoardComponent;
 import remote.iClient;
 import remote.iServer;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 
 /**
  * This class does not store state, it only stores Methods of local client,
@@ -18,11 +18,13 @@ import java.util.ArrayList;
 
 public class ClientRMI extends UnicastRemoteObject implements iClient {
     private iServer whiteboard;
+    private String username;
     private ClientUI clientUI;
 
-    protected ClientRMI(iServer whiteboard) throws RemoteException {
+    protected ClientRMI(iServer whiteboard, String username) throws RemoteException {
         super();
         this.whiteboard = whiteboard;
+        this.username = username;
         clientUI = new ClientUI(whiteboard, this);
     }
 
@@ -39,25 +41,36 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     }
 
 
+    public String getUsername() {
+        return username;
+    }
+
     @Override
-    public boolean request_drawRectangle() throws RemoteException {
+    public boolean request_drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException {
         // 1. ask whiteboard to draw rectangle
-        whiteboard.broadDrawRectangle();
+        whiteboard.broadDrawShape(mode, x1, y1, x2, y2);
         System.out.println("Sent draw to Server WhiteBoard ");
         return true;
     }
 
     @Override
-    public boolean local_drawRectangle() throws RemoteException {
+    public boolean local_drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException {
         // 2. whiteboard call this function to draw local rectangle
-        clientUI.drawRectangle();
+        clientUI.drawShape(mode, x1, y1, x2, y2);
         System.out.println("Called by Server to draw local ");
         return true;
     }
 
     @Override
-    public boolean request_sendChatMessage(String message) throws RemoteException {
-        //whiteboard.broadCastChat()
+    public boolean request_sendChatMessage(String username, String message) throws RemoteException {
+        whiteboard.broadCastChat(username, message);
+        return true;
+    }
+
+    @Override
+    public boolean local_sendChatMessage(String username, String message) throws RemoteException {
+        clientUI.sendChatMessage(username, message);
+
         return true;
     }
 

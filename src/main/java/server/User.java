@@ -13,7 +13,8 @@ public class User {
         MANAGER,
         USER,
     }
-    public STATUS status = STATUS.WAITING;
+    //public STATUS status = STATUS.WAITING;
+    public STATUS status = STATUS.USER; // FOR DEBUG PURPOSE ^^
     public String name;
     public iClient client;
 

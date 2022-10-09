@@ -1,20 +1,24 @@
 package ComponentGUI;
 
+import client.ClientRMI;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.rmi.RemoteException;
 
 public class ChatPanel extends JPanel {
+    private ClientRMI clientRMI;
     private JLabel NUserLabel;
     private JButton extendUserButton;
     private JTextArea chatbox;
     private JTextField inputMsg;
     private JButton sendMsgButton;
 
-    public ChatPanel(){
+    public ChatPanel(ClientRMI clientRMI){
+        this.clientRMI = clientRMI;
         this.setPreferredSize(new Dimension(200, 500));
 
         this.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
@@ -69,7 +73,12 @@ public class ChatPanel extends JPanel {
     }
 
     public void sendMessage(){
-        addMessage("Me", inputMsg.getText());
+
+        try {
+            clientRMI.request_sendChatMessage(clientRMI.getUsername(), inputMsg.getText());
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
         inputMsg.setText("");
     }
 

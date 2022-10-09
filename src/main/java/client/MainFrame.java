@@ -24,10 +24,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame(String appName) {
         super(appName);
-
-        this.whiteBoard = new WhiteBoardComponent();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.add(whiteBoard);
 
         this.setContentPane(mainPanel);
         this.pack();
