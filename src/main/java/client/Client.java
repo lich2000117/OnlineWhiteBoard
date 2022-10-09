@@ -3,6 +3,7 @@ package client;
 import remote.iClient;
 import remote.iServer;
 
+import javax.swing.*;
 import java.io.Serializable;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
@@ -13,30 +14,29 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class Client extends UnicastRemoteObject implements Serializable{
-    private String Host_NamingServer;
-    private String hostPort;
-    private String self_port;
+    private String NamingServerIP;
+    private String NamingServerPort;
     private String remoteMethodName;
     private String thisRMIName;
-    private ClientChatBox clientChatBox;
+    private ClientRMI clientRMI;
     private String name = "New User";
 
-    protected Client(String IP, String port) throws RemoteException {
-        this.Host_NamingServer = IP;
-        this.hostPort = port;
+    protected Client(String NamingServerIP, String NamingServerPort) throws RemoteException {
+        this.NamingServerIP = NamingServerIP;
+        this.NamingServerPort = NamingServerPort;
         this.remoteMethodName = "whiteboardrmi";
         this.thisRMIName = "client";
-        this.clientChatBox = new ClientChatBox();
+        this.clientRMI = new ClientRMI();
     }
 
     public static void main(String [] args) {
 
         // Connect to server RMI
-        String serverIP = "localhost";
-        String port = "2000";
+        String NamingServerIP = "localhost";
+        String NamingServerPort = "2000";
         Client client;
         try {
-            client = new Client(serverIP, port);
+            client = new Client(NamingServerIP, NamingServerPort);
         }
         catch (RemoteException e){
             e.printStackTrace();
@@ -44,35 +44,33 @@ public class Client extends UnicastRemoteObject implements Serializable{
         }
         client.connectToServer();
 
-        // register self RMI for server
-        iClient chatBox;
-        try {
-            chatBox = (iClient) new ClientChatBox();
-            int self_port = 2005;
-            Registry registry = LocateRegistry.createRegistry(self_port);
-            registry.bind("chat", chatBox);
-            System.out.println("Client RMI server listing on Port: "+ port);
-        } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (AlreadyBoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
 
     }
 
     public void connectToServer(){
         try{
-            iServer whiteboardRMI = (iServer) Naming.lookup("rmi://" + this.Host_NamingServer + ":" + this.hostPort + "/" + this.remoteMethodName);
-
+            // connect to WhiteBoard RMI from Naming Server
+            iServer whiteboardRMI = (iServer) Naming.lookup("rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.remoteMethodName);
             System.out.println("connected to RMI!");
 
+
+            // register self RMI apis to naming server
+            iClient chatBox;
+            try {
+                chatBox = (iClient) new ClientRMI();
+                Naming.rebind("rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.thisRMIName, chatBox);
+                System.out.println("Client RMI registered to server!");
+            } catch (RemoteException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
             // tell server to add me to its user list.
-            String thisURL = "rmi://" + this.Host_NamingServer + ":" + this.hostPort + "/" + this.thisRMIName;
+            String thisURL = "rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.thisRMIName;
             whiteboardRMI.addUser(name, thisURL);
             System.out.println("User Added");
+            whiteboardRMI.broadCastChat("NEW CHAT!");
         }
         catch (RemoteException | NotBoundException e) {
             // TODO Message should print to GUI

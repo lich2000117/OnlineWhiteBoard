@@ -2,26 +2,32 @@ package client;
 
 import remote.iClient;
 
+import javax.swing.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 /**
- * Chat related method at local client,
+ * This class stores State, Methods of local client,
  * implements iClient to make it accessible to the server.
  *
  * Author:Chenghao Li
  */
 
-public class ClientChatBox extends UnicastRemoteObject implements iClient {
+public class ClientRMI extends UnicastRemoteObject implements iClient {
     ArrayList<String> messages = new ArrayList<String>();
-
-    protected ClientChatBox() throws RemoteException {
+    private MainFrame chatFrame;
+    protected ClientRMI() throws RemoteException {
         super();
+        // gui for text boxes
+        chatFrame = new MainFrame("ChatBox");
+        chatFrame.setVisible(true);
     }
 
     @Override
     public boolean addMessage(String message) throws RemoteException {
+
+        chatFrame.addText(message);
         messages.add(message);
         DisplayChat();
         return true;

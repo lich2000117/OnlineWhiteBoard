@@ -37,4 +37,13 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         userList.add(new User(name, newClient));
         return true;
     }
+
+    @Override
+    public Void broadCastChat(String t) throws RemoteException {
+        // notify every user to update their chatbox
+        for (User u:userList){
+            u.client.addMessage(t);
+        }
+        return null;
+    }
 }
