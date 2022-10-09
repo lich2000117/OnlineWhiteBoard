@@ -6,15 +6,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
+import java.awt.image.AffineTransformOp;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class WhiteBoardComponent extends JPanel {
     private ClientRMI clientRMI;
     private ArrayList<Shape> shapeList = new ArrayList<>();
+    private Shape temporaryShape = null;
     private drawMode dMode = drawMode.DEFAULT;
     private shapeMode sMode = shapeMode.RECTANGLE;
 
@@ -24,7 +24,8 @@ public class WhiteBoardComponent extends JPanel {
         this.clientRMI = clientRMI;
         this.setPreferredSize(new Dimension(500, 500));
 
-        addMouseListener(new MouseAdapter() {
+
+        MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
@@ -38,6 +39,21 @@ public class WhiteBoardComponent extends JPanel {
                     case SHAPE:
                         x1 = e.getX();
                         y1 = e.getY();
+                }
+            }
+
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseMoved(e);
+
+                switch (dMode){
+                    case SHAPE:
+                        x2 = e.getX();
+                        y2 = e.getY();
+
+                        drawShape(sMode, x1, y1, x2, y2, false);
+                        break;
                 }
             }
 
@@ -59,7 +75,9 @@ public class WhiteBoardComponent extends JPanel {
                         break;
                 }
             }
-        });
+        };
+        addMouseListener(mouseAdapter);
+        addMouseMotionListener(mouseAdapter);
     }
 
     public void setDrawMode(drawMode mode){
@@ -67,25 +85,37 @@ public class WhiteBoardComponent extends JPanel {
     }
     public void setShapeMode(shapeMode mode){this.sMode = mode;}
 
-    public void drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2){
+    public void drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, boolean remains){
         int true_x1 = Math.min(x1,x2);
         int true_y1 = Math.min(y1,y2);
         int width=Math.abs(x1-x2);
         int height=Math.abs(y1-y2);
 
+        Shape s = null;
         switch (mode){
             case RECTANGLE:
-                shapeList.add(new Rectangle2D.Float(true_x1, true_y1, width, height));
+                s = new Rectangle2D.Float(true_x1, true_y1, width, height);
                 break;
             case ELLIPSE:
-                shapeList.add(new Ellipse2D.Float(true_x1, true_y1, width, height));
-                break;
-            case TRIANGLE:
-                //shapeList.add(new .Float(true_x1, true_y1, width, height));
+                s = new Ellipse2D.Float(true_x1, true_y1, width, height);
                 break;
             case LINE:
-                shapeList.add(new Line2D.Float(x1, y1, x2, y2));
+                s = new Line2D.Float(x1, y1, x2, y2);
                 break;
+        }
+
+        if(s != null && remains){
+            shapeList.add(s);
+            temporaryShape = null;
+        } else{
+            if (temporaryShape == null){
+                temporaryShape = s;
+            } else{
+                AffineTransform af = new AffineTransform();
+                af.translate(2, 3);
+                temporaryShape.getBounds().setBounds(true_x1, true_y1, width, height);
+                temporaryShape = af.createTransformedShape(temporaryShape);
+            }
         }
 
         repaint();
@@ -94,10 +124,17 @@ public class WhiteBoardComponent extends JPanel {
     public void paint(Graphics g){
         Graphics2D g2D = (Graphics2D) g;
 
+        g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
         g2D.drawRect(0, 0, 490, 490);
 
         for(Shape s: shapeList){
             g2D.draw(s);
+        }
+
+        if(temporaryShape != null){
+            g2D.draw(temporaryShape);
         }
     }
 
@@ -110,7 +147,6 @@ public class WhiteBoardComponent extends JPanel {
     public enum shapeMode{
         RECTANGLE,
         ELLIPSE,
-        TRIANGLE,
         LINE
     }
 }
