@@ -7,6 +7,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -44,7 +45,7 @@ public class MyFrame extends JFrame {
                 //click
                 super.mouseClicked(e);
 
-                whiteBoard.getGraphics().drawRect(50, 50, 100, 100);
+               whiteBoard.setMode(WhiteBoardComponent.drawMode.RECTANGLE);
             }
         });
 
@@ -54,7 +55,7 @@ public class MyFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                chatList.getGraphics().drawRect(50, 50, 100, 100);
+                whiteBoard.setMode(WhiteBoardComponent.drawMode.ELLIPSE);
             }
         });
     }
@@ -63,10 +64,10 @@ public class MyFrame extends JFrame {
     private void setupUI(){
         mainPanel.setLayout(new GridLayoutManager(6, 3, new Insets(10, 10, 10, 10), -1, -1));
         button1 = new JButton();
-        button1.setText("Button");
+        button1.setText("Rectangle");
         mainPanel.add(button1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         button2 = new JButton();
-        button2.setText("Button");
+        button2.setText("Ellipse");
         mainPanel.add(button2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         button3 = new JButton();
         button3.setText("Button");
@@ -77,7 +78,8 @@ public class MyFrame extends JFrame {
         mainPanel.add(spacer2, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
         whiteBoard = new WhiteBoardComponent();
-        whiteBoard.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
+        whiteBoard.setBorder(new EmptyBorder(50, 50, 50, 50));
+        whiteBoard.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(whiteBoard, new GridConstraints(0, 1, 6, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
 
