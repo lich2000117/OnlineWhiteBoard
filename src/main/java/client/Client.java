@@ -13,25 +13,30 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ * This class Client,
+ * 1. set up connection to RMI server
+ * 2. set up stub and get stub from whiteboard on RMI server.
+ */
+
 public class Client extends UnicastRemoteObject implements Serializable{
     private String NamingServerIP;
     private String NamingServerPort;
-    private String remoteMethodName;
-    private String thisRMIName;
-    private ClientRMI clientRMI;
-    private String name = "New User";
+    private String remoteMethodName; // we want to get all methods from whiteboardrmi server.
+    private String thisRMIName = "client";
+    public static String userName = "New User"; //static, one client can have only one username
+    public String SELF_RMI_ADDRESS;  // RMI address of this client instance, so we can add this client to RMI server's object list.
 
     protected Client(String NamingServerIP, String NamingServerPort) throws RemoteException {
         this.NamingServerIP = NamingServerIP;
         this.NamingServerPort = NamingServerPort;
         this.remoteMethodName = "whiteboardrmi";
         this.thisRMIName = "client";
-        this.clientRMI = new ClientRMI();
     }
 
     public static void main(String [] args) {
 
-        // Connect to server RMI
+        // 1. Connect to server RMI
         String NamingServerIP = "localhost";
         String NamingServerPort = "2000";
         Client client;
@@ -42,35 +47,24 @@ public class Client extends UnicastRemoteObject implements Serializable{
             e.printStackTrace();
             return;
         }
-        client.connectToServer();
-
-
+        // 2. set up RMI registry and // 3. set up RMI UI
+        client.setUpRMIServer();
 
     }
 
-    public void connectToServer(){
+    public void setUpRMIServer(){
         try{
-            // connect to WhiteBoard RMI from Naming Server
+            // 1. connect to WhiteBoard RMI from Naming Server
             iServer whiteboardRMI = (iServer) Naming.lookup("rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.remoteMethodName);
-            System.out.println("connected to RMI!");
+            System.out.println("connected to whiteboard RMI!");
 
-
-            // register self RMI apis to naming server
-            iClient chatBox;
-            try {
-                chatBox = (iClient) new ClientRMI();
-                Naming.rebind("rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.thisRMIName, chatBox);
-                System.out.println("Client RMI registered to server!");
-            } catch (RemoteException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            // tell server to add me to its user list.
-            String thisURL = "rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.thisRMIName;
-            whiteboardRMI.addUser(name, thisURL);
-            System.out.println("User Added");
-            whiteboardRMI.broadCastChat("NEW CHAT!");
+            // 2. register self RMI apis to naming server and // 3. set up RMI UI
+            ClientRMI clientRMI = (ClientRMI) new ClientRMI(whiteboardRMI); // 3. set up RMI UI and run gui
+            SELF_RMI_ADDRESS = "rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.thisRMIName;
+            Naming.rebind(SELF_RMI_ADDRESS, clientRMI);
+            // 4. add current Client to Whiteboard RMI server so whiteboard has access to call method defined in RMI.
+            if (! clientRMI.addMeToWhiteBoardServer(userName, SELF_RMI_ADDRESS)){ return; }
+            System.out.println("Client RMI registered to server!");
         }
         catch (RemoteException | NotBoundException e) {
             // TODO Message should print to GUI

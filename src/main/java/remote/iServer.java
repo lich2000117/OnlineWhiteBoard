@@ -1,7 +1,5 @@
 package remote;
 
-import client.Client;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 /**
@@ -16,4 +14,5 @@ import java.rmi.RemoteException;
 public interface iServer extends Remote {
     Boolean addUser(String name, String rmiURL) throws RemoteException;
     Void broadCastChat(String t) throws RemoteException;
+    void broadDrawRectangle() throws RemoteException;
 }

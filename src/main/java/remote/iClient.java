@@ -15,6 +15,8 @@ import java.rmi.RemoteException;
 public interface iClient extends Remote {
 
     // tell server a message wants to be added, let server tell all users.
-    boolean addMessage(String message) throws RemoteException;
-    void drawLine(String m) throws RemoteException;
+    boolean request_drawRectangle() throws RemoteException;
+    boolean local_drawRectangle() throws RemoteException;
+
+    boolean request_sendChatMessage(String message) throws RemoteException;
 }

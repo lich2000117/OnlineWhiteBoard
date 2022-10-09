@@ -1,11 +1,9 @@
 package server;
 
-import client.Client;
 import remote.iClient;
 import remote.iServer;
 
 import java.net.MalformedURLException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -34,7 +32,14 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
             e.printStackTrace();
             return false;
         }
-        userList.add(new User(name, newClient));
+        User usr;
+        // if first enter the room, make it manager
+        if (userList.size()==0) {
+            usr = new User(name, newClient, User.STATUS.MANAGER);}
+        else {
+            usr = new User(name, newClient); }
+        userList.add(usr);
+        System.out.println("Successfully add User to server, user Status: " + usr.status);
         return true;
     }
 
@@ -42,8 +47,33 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     public Void broadCastChat(String t) throws RemoteException {
         // notify every user to update their chatbox
         for (User u:userList){
-            u.client.addMessage(t);
+            if (checkApproved(u)) {
+                //u.client.addMessage(t);
+            }
         }
         return null;
+    }
+
+    @Override
+    public void broadDrawRectangle() throws RemoteException {
+        for (User u:userList){
+            u.client.local_drawRectangle();
+        }
+    }
+
+    // check if user is authenticated
+    private boolean checkApproved(User u){
+        if (u.status!= User.STATUS.WAITING){
+            return true;
+        }
+        return false;
+    }
+
+    // check if it's manager
+    private boolean checkManager(User u){
+        if (u.status == User.STATUS.MANAGER){
+            return true;
+        }
+        return false;
     }
 }

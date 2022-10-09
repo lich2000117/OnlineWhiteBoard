@@ -37,6 +37,12 @@ public class MainFrame extends JFrame {
                 super.mouseClicked(e);
             }
         });
+        button5.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+            }
+        });
     }
 
     public static void main(String[] args) {

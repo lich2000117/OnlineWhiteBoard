@@ -1,45 +1,65 @@
 package client;
 
 import remote.iClient;
+import remote.iServer;
 
-import javax.swing.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 /**
- * This class stores State, Methods of local client,
- * implements iClient to make it accessible to the server.
+ * This class does not store state, it only stores Methods of local client,
  *
- * Author:Chenghao Li
+ * 1. request_: implements iClient to make it accessible to the server.
+ * 2. local_: Server calls method in this class to modify client side.
+ *
+ * Author:Chenghao Li, Dimitri
  */
 
 public class ClientRMI extends UnicastRemoteObject implements iClient {
-    ArrayList<String> messages = new ArrayList<String>();
-    private MainFrame chatFrame;
-    protected ClientRMI() throws RemoteException {
+    private iServer whiteboard;
+    private ClientUI clientUI;
+
+    protected ClientRMI(iServer whiteboard) throws RemoteException {
         super();
-        // gui for text boxes
-        chatFrame = new MainFrame("ChatBox");
-        chatFrame.setVisible(true);
+        this.whiteboard = whiteboard;
+        clientUI = new ClientUI(whiteboard, this);
     }
 
-    @Override
-    public boolean addMessage(String message) throws RemoteException {
+    public boolean addMeToWhiteBoardServer(String userName, String RMI_URL){
+        try {
+            whiteboard.addUser(userName, RMI_URL);
+        }
+        catch (Exception e){
+            System.out.println("Cannot Connect to Whiteboard Server.");
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 
-        chatFrame.addText(message);
-        messages.add(message);
-        DisplayChat();
+
+    @Override
+    public boolean request_drawRectangle() throws RemoteException {
+        // 1. ask whiteboard to draw rectangle
+        whiteboard.broadDrawRectangle();
+        System.out.println("Sent draw to Server WhiteBoard ");
         return true;
     }
 
     @Override
-    public void drawLine(String m) throws RemoteException {
-        System.out.println(m);
+    public boolean local_drawRectangle() throws RemoteException {
+        // 2. whiteboard call this function to draw local rectangle
+        clientUI.drawRectangle();
+        System.out.println("Called by Server to draw local ");
+        return true;
     }
 
-    public void DisplayChat() {
-        // TODO this is the method that display all chats in GUI
-        System.out.println(messages.stream().toArray());
+    @Override
+    public boolean request_sendChatMessage(String message) throws RemoteException {
+        //whiteboard.broadCastChat()
+        return true;
     }
+
+
 }
