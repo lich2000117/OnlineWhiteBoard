@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.rmi.RemoteException;
 
 public class MyFrame extends JFrame {
 
@@ -28,10 +29,13 @@ public class MyFrame extends JFrame {
     private JTextField inputMsg;
     private JButton sendMsgButton;
 
-    private WhiteBoardComponent whiteBoard;
+    private ClientRMI clientRMI;
 
-    public MyFrame(){
+    private WhiteBoardComponent boardComponent;
+
+    public MyFrame(ClientRMI clientRMI){
         mainPanel  = new JPanel();
+        this.clientRMI = clientRMI;
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(mainPanel);
@@ -45,7 +49,13 @@ public class MyFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                whiteBoard.getGraphics().drawRect(50, 50, 100, 100);
+                // ask RMI to send a request to server to draw.
+                try {
+                    clientRMI.request_drawRectangle();
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+
             }
         });
 
@@ -76,6 +86,10 @@ public class MyFrame extends JFrame {
         });
     }
 
+    public void drawRectangle_Board(){
+        boardComponent.getGraphics().drawRect(50, 50, 100, 100);
+    }
+
 
     private void setupUI(){
         mainPanel.setLayout(new GridLayoutManager(6, 3, new Insets(10, 10, 10, 10), -1, -1));
@@ -93,19 +107,19 @@ public class MyFrame extends JFrame {
         final Spacer spacer2 = new Spacer();
         mainPanel.add(spacer2, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
-        whiteBoard = new WhiteBoardComponent();
-        whiteBoard.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
-        mainPanel.add(whiteBoard, new GridConstraints(0, 1, 6, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        boardComponent = new WhiteBoardComponent();
+        boardComponent.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
+        mainPanel.add(boardComponent, new GridConstraints(0, 1, 6, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
 
         chatPanel = new ChatPanel();
         mainPanel.add(chatPanel, new GridConstraints(0, 2, 6, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK |  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK |GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new MyFrame();
-        frame.setVisible(true);
-    }
+//    public static void main(String[] args) {
+//        JFrame frame = new MyFrame();
+//        frame.setVisible(true);
+//    }
 }
 
 

@@ -17,3 +17,22 @@ WhiteBoardRMI: method repository, it is registred in naming server, includes all
 Client: a client trying to use Remote method to execute something. and register ClientRMI to naming server.
 
 ClientRMI: Client side method repository to store all methods needed to be called from server. It is regiesterd to naming server.
+
+
+## How to Run in terminal:
+
+#### Server:
+`
+mvn clean;
+mvn package;
+java -cp target/server-jar-with-dependencies.jar server.Server
+`
+
+
+#### Client
+`
+mvn clean;
+mvn package;
+java -cp target/client-jar-with-dependencies.jar client.Client
+`
+
