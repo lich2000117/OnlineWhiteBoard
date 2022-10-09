@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
  * needs to implement this.
  *
  * Author: Chenghao Li
+ *
  */
 public interface iServer extends Remote {
     Boolean addUser(String name, String rmiURL) throws RemoteException;

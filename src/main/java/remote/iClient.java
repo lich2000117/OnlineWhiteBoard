@@ -16,4 +16,5 @@ public interface iClient extends Remote {
 
     // tell server a message wants to be added, let server tell all users.
     boolean addMessage(String message) throws RemoteException;
+    void drawLine(String m) throws RemoteException;
 }

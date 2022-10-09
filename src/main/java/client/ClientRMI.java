@@ -33,6 +33,11 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
         return true;
     }
 
+    @Override
+    public void drawLine(String m) throws RemoteException {
+        System.out.println(m);
+    }
+
     public void DisplayChat() {
         // TODO this is the method that display all chats in GUI
         System.out.println(messages.stream().toArray());
