@@ -1,26 +1,37 @@
 package client;
 
-import remote.iFunction;
+import remote.iClient;
+import remote.iServer;
 
 import java.io.Serializable;
+import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class Client extends UnicastRemoteObject implements Serializable{
-    private String hostName;
+    private String Host_NamingServer;
     private String hostPort;
+    private String self_port;
     private String remoteMethodName;
+    private String thisRMIName;
+    private ClientChatBox clientChatBox;
+    private String name = "New User";
 
     protected Client(String IP, String port) throws RemoteException {
-        this.hostName = IP;
+        this.Host_NamingServer = IP;
         this.hostPort = port;
-        this.remoteMethodName = "calculator";
-
+        this.remoteMethodName = "whiteboardrmi";
+        this.thisRMIName = "client";
+        this.clientChatBox = new ClientChatBox();
     }
 
     public static void main(String [] args) {
+
+        // Connect to server RMI
         String serverIP = "localhost";
         String port = "2000";
         Client client;
@@ -31,16 +42,37 @@ public class Client extends UnicastRemoteObject implements Serializable{
             e.printStackTrace();
             return;
         }
-        client.connectToRMI();
+        client.connectToServer();
+
+        // register self RMI for server
+        iClient chatBox;
+        try {
+            chatBox = (iClient) new ClientChatBox();
+            int self_port = 2005;
+            Registry registry = LocateRegistry.createRegistry(self_port);
+            registry.bind("chat", chatBox);
+            System.out.println("Client RMI server listing on Port: "+ port);
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (AlreadyBoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
     }
 
-    public void connectToRMI(){
+    public void connectToServer(){
         try{
-            iFunction calculator = (iFunction) Naming.lookup("rmi://" + this.hostName + ":" + this.hostPort + "/" + this.remoteMethodName);
+            iServer whiteboardRMI = (iServer) Naming.lookup("rmi://" + this.Host_NamingServer + ":" + this.hostPort + "/" + this.remoteMethodName);
 
             System.out.println("connected to RMI!");
-            String out = calculator.calculate("TestMessage");
-            System.out.println("Received Message: " + out);
+
+            // tell server to add me to its user list.
+            String thisURL = "rmi://" + this.Host_NamingServer + ":" + this.hostPort + "/" + this.thisRMIName;
+            whiteboardRMI.addUser(name, thisURL);
+            System.out.println("User Added");
         }
         catch (RemoteException | NotBoundException e) {
             // TODO Message should print to GUI
@@ -51,4 +83,5 @@ public class Client extends UnicastRemoteObject implements Serializable{
             e.printStackTrace();
         }
     }
+
 }
