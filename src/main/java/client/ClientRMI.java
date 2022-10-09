@@ -26,8 +26,6 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
 
     @Override
     public boolean addMessage(String message) throws RemoteException {
-
-        chatFrame.addText(message);
         messages.add(message);
         DisplayChat();
         return true;

@@ -43,9 +43,6 @@ public class Client extends UnicastRemoteObject implements Serializable{
             return;
         }
         client.connectToServer();
-
-
-
     }
 
     public void connectToServer(){
@@ -81,7 +78,6 @@ public class Client extends UnicastRemoteObject implements Serializable{
             e.printStackTrace();
         }
     }
-
 }
 
 
