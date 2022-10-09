@@ -56,14 +56,10 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     }
 
     @Override
-    public boolean request_AddChatMessage(String message) throws RemoteException {
+    public boolean request_sendChatMessage(String message) throws RemoteException {
         //whiteboard.broadCastChat()
         return true;
     }
 
-    @Override
-    public void drawLine(String m) throws RemoteException {
-        System.out.println(m);
-    }
 
 }

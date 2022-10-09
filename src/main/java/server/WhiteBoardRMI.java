@@ -47,7 +47,9 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     public Void broadCastChat(String t) throws RemoteException {
         // notify every user to update their chatbox
         for (User u:userList){
-            //u.client.addMessage(t);
+            if (checkApproved(u)) {
+                //u.client.addMessage(t);
+            }
         }
         return null;
     }
@@ -57,5 +59,21 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         for (User u:userList){
             u.client.local_drawRectangle();
         }
+    }
+
+    // check if user is authenticated
+    private boolean checkApproved(User u){
+        if (u.status!= User.STATUS.WAITING){
+            return true;
+        }
+        return false;
+    }
+
+    // check if it's manager
+    private boolean checkManager(User u){
+        if (u.status == User.STATUS.MANAGER){
+            return true;
+        }
+        return false;
     }
 }
