@@ -44,12 +44,17 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
         return true;
     }
 
-    public boolean request_KickUser(String username){
+    public boolean request_KickUser(String targetuserName){
         try {
-            whiteboard.kickUser(username);
+            if (!whiteboard.kickUser(this.username, targetuserName)){
+                // kick fail trying to kick yourself as a manager
+                clientUI.displayAlert("Cannot Kick Manager!");
+                return false;
+            }
         }
         catch (Exception e){
             System.out.println("Cannot Kick User.");
+            clientUI.displayAlert("Kick unknown Failed!");
             e.printStackTrace();
             return false;
         }
@@ -67,17 +72,17 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     }
 
     @Override
-    public boolean request_drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException {
+    public boolean request_drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException {
         // 1. ask whiteboard to draw rectangle
-        whiteboard.broadDrawShape(mode, x1, y1, x2, y2);
+        whiteboard.broadDrawShape(mode, x1, y1, x2, y2, brushSize, filling, rgb);
         System.out.println("Sent draw to Server WhiteBoard ");
         return true;
     }
 
     @Override
-    public boolean local_drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException {
+    public boolean local_drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException {
         // 2. whiteboard call this function to draw local rectangle
-        clientUI.drawShape(mode, x1, y1, x2, y2);
+        clientUI.drawShape(mode, x1, y1, x2, y2, brushSize, filling, rgb);
         System.out.println("Called by Server to draw local ");
         return true;
     }

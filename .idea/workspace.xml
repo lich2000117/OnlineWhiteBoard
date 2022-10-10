@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="625b89b4-feea-467d-a551-9114af630c3a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/OnlineWhiteBoard.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/ImageColoredButton.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/PickBrushSizeDialog.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__asm_asm_3_0.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__asm_asm_commons_3_0.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__asm_asm_tree_3_0.xml" beforeDir="false" />
@@ -19,18 +16,13 @@
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__jdom_jdom_1_0.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_10.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/ChatPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/ChatPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/ImageButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/ImageButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/LocalDrawBoardComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/LocalDrawBoardComponent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/UserPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/UserPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/ClientRMI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/ClientRMI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/ClientUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/ClientUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/MainFrame.form" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/MainFrame.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/MyFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/MyFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/client/LocalDrawBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/LocalDrawBoard.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/remote/iClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/remote/iClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/remote/iServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/remote/iServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/server/WhiteBoardRMI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/WhiteBoardRMI.java" afterDir="false" />
@@ -70,18 +62,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/lee/Dropbox/Mac/Documents/OnlineWhiteBoard",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/lee/Dropbox/Mac/Documents/OnlineWhiteBoard&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -186,5 +178,8 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="GROUP_MULTIFILE_MERGE_BY_DIRECTORY" value="true" />
   </component>
 </project>

@@ -16,8 +16,8 @@ public class ClientUI {
         this.frame = new LocalDrawBoard(clientRMI);
     }
 
-    public void drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2){
-        this.frame.getWhiteBoard().drawShape(mode, x1, y1, x2, y2);
+    public void drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb){
+        this.frame.getWhiteBoard().drawShape(mode, x1, y1, x2, y2, brushSize, filling, rgb);
         System.out.println("Draw on Board");
     }
 
@@ -31,5 +31,9 @@ public class ClientUI {
 
     public void kickClient(){
         this.frame.DisableUI_WithMessage("You are kicked.");
+    }
+
+    public void displayAlert(String msg){
+        this.frame.DisplayMessage(msg);
     }
 }

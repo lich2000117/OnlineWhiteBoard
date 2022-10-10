@@ -85,9 +85,10 @@ public class UserPanel extends JPanel {
                 super.mouseClicked(e);
                 String userName = (String) userList.getSelectedValue();
                 if (userName!=""){
-                    clientRMI.request_KickUser(userName);
-                    System.out.println("Kick user sent");
-                    JOptionPane.showMessageDialog(null, "They GONE! CYA!");
+                    if (clientRMI.request_KickUser(userName)) {
+                        System.out.println("Kick user sent");
+                        JOptionPane.showMessageDialog(null, "They GONE! CYA!");
+                    }
                 }
             }
         });

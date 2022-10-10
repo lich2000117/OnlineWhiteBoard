@@ -1,9 +1,6 @@
 package client;
 
-import ComponentGUI.ChatPanel;
-import ComponentGUI.ImageButton;
-import ComponentGUI.UserPanel;
-import ComponentGUI.LocalDrawBoardComponent;
+import ComponentGUI.*;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -11,6 +8,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Paths;
@@ -51,10 +50,6 @@ public class LocalDrawBoard extends JFrame {
         this.setVisible(true);
     }
 
-
-    private void loadIcons(){
-
-    }
     private void setupUI() {
         mainPanel.setLayout(new GridLayoutManager(2, 3, new Insets(10, 10, 10, 10), -1, -1));
 
@@ -112,8 +107,10 @@ public class LocalDrawBoard extends JFrame {
 
         bottomButtonList = new ImageButton[3];
         bottomButtonList[0] = new ImageButton(userDirectory + "images/brushSize.png", userDirectory + "images/brushSize.png", new Dimension(F_buttonSize, F_buttonSize));
-        bottomButtonList[1] = new ImageButton(userDirectory + "images/neutralImage.png", userDirectory + "images/neutralImage.png", new Dimension(F_buttonSize, F_buttonSize));
-        bottomButtonList[2] = new ImageButton(userDirectory + "images/figureEmpty.png", userDirectory + "images/figureFilled.png", new Dimension(F_buttonSize, F_buttonSize));
+        bottomButtonList[1] = new ImageButton(userDirectory + "images/figureEmpty.png", userDirectory + "images/figureFilled.png", new Dimension(F_buttonSize, F_buttonSize));
+        bottomButtonList[2] = new ImageColoredButton(userDirectory + "images/neutralImage.png", userDirectory + "images/neutralImage.png", new Dimension(F_buttonSize, F_buttonSize));
+        ((ImageColoredButton)bottomButtonList[2]).setColor(whiteBoard.getCurrentColor());
+
 
         setUpBottomButtonListener();
         for(int i = 0; i < bottomButtonList.length; i++) {
@@ -195,12 +192,14 @@ public class LocalDrawBoard extends JFrame {
     }
 
     private void setUpBottomButtonListener() {
+        Frame frame = this;
         bottomButtonList[0].addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                //TODO
+                PickBrushSizeDialog dial = new PickBrushSizeDialog(frame, whiteBoard.getCurrentBrushSize());
+                whiteBoard.setCurrentBrushSize(dial.run());
             }
         });
 
@@ -209,7 +208,14 @@ public class LocalDrawBoard extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                //TODO
+                if(bottomButtonList[1].isSelected()){
+                    whiteBoard.setCurrentFilling(false);
+                    bottomButtonList[1].unselect();
+                } else{
+                    whiteBoard.setCurrentFilling(true);
+                    bottomButtonList[1].select();
+                }
+
             }
         });
 
@@ -218,7 +224,16 @@ public class LocalDrawBoard extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                //TODO
+                JColorChooser colorChooser = new JColorChooser(whiteBoard.getCurrentColor());
+                ActionListener onOk = new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Color c = colorChooser.getColor();
+                        ((ImageColoredButton) bottomButtonList[2]).setColor(c);
+                        whiteBoard.setCurrentColor(c);
+                    }
+                };
+                JColorChooser.createDialog(frame, "Pick brush color", true, colorChooser, onOk, (ActionEvent ev)-> {}).show();
             }
         });
     }
