@@ -104,6 +104,7 @@ public class WhiteBoardComponent extends JPanel {
     public enum drawMode{
         DEFAULT,
         SHAPE,
+        POLYGON,
         FREE
     }
 
