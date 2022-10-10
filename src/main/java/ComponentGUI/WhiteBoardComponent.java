@@ -6,9 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -81,7 +79,17 @@ public class WhiteBoardComponent extends JPanel {
                 shapeList.add(new Ellipse2D.Float(true_x1, true_y1, width, height));
                 break;
             case TRIANGLE:
-                //shapeList.add(new .Float(true_x1, true_y1, width, height));
+                Point2D pt1, pt2, pt3;
+                if(width < height){
+                    pt1 = new Point2D.Float(x1, y1);
+                    pt2 = new Point2D.Float(x2, y1);
+                    pt3 = new Point2D.Float(((float)x1 + x2) / 2, y2);
+                } else{
+                    pt1 = new Point2D.Float(x1, y1);
+                    pt2 = new Point2D.Float(x1, y2);
+                    pt3 = new Point2D.Float(x2, ((float)y1 + y2) / 2);
+                }
+                shapeList.add(new TriangleShape(pt1, pt2, pt3));
                 break;
             case LINE:
                 shapeList.add(new Line2D.Float(x1, y1, x2, y2));
@@ -98,6 +106,16 @@ public class WhiteBoardComponent extends JPanel {
 
         for(Shape s: shapeList){
             g2D.draw(s);
+        }
+    }
+
+    //TriangleShape: All credit to http://www.java2s.com/Tutorials/Java/Graphics_How_to/Shape/Draw_a_triangle.htm
+    class TriangleShape extends Path2D.Double {
+        public TriangleShape(Point2D... points) {
+            moveTo(points[0].getX(), points[0].getY());
+            lineTo(points[1].getX(), points[1].getY());
+            lineTo(points[2].getX(), points[2].getY());
+            closePath();
         }
     }
 

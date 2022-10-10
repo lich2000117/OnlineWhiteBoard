@@ -12,9 +12,13 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Paths;
 
 public class MyFrame extends JFrame {
     public final int F_buttonSize = 50;
+    public final String userDirectory = Paths.get("")
+            .toAbsolutePath()
+            .toString() + "/src/";
 
     private JPanel mainPanel;
 
@@ -59,12 +63,12 @@ public class MyFrame extends JFrame {
 
 
         leftButtonList = new ImageButton[6];
-        leftButtonList[0] = new ImageButton("images/defaultSquare.png", "images/selectedSquare.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[1] = new ImageButton("images/defaultCircle.png", "images/selectedCircle.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[2] = new ImageButton("images/defaultTriangle.png", "images/selectedTriangle.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[3] = new ImageButton("images/defaultLine.png", "images/selectedLine.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[4] = new ImageButton("images/defaultPolygon.png", "images/selectedPolygon.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[5] = new ImageButton("images/defaultFree.png", "images/selectedFree.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[0] = new ImageButton(userDirectory + "images/defaultSquare.png", userDirectory + "images/selectedSquare.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[1] = new ImageButton(userDirectory + "images/defaultCircle.png", userDirectory + "images/selectedCircle.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[2] = new ImageButton(userDirectory + "images/defaultTriangle.png", userDirectory + "images/selectedTriangle.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[3] = new ImageButton(userDirectory + "images/defaultLine.png", userDirectory + "images/selectedLine.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[4] = new ImageButton(userDirectory +"images/defaultPolygon.png", userDirectory + "images/selectedPolygon.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[5] = new ImageButton(userDirectory + "images/defaultFree.png", userDirectory + "images/selectedFree.png", new Dimension(F_buttonSize, F_buttonSize));
 
 
         setUpLeftButtonListener();
@@ -105,9 +109,9 @@ public class MyFrame extends JFrame {
 
 
         bottomButtonList = new ImageButton[3];
-        bottomButtonList[0] = new ImageButton("images/brushSize.png", "images/brushSize.png", new Dimension(F_buttonSize, F_buttonSize));
-        bottomButtonList[1] = new ImageButton("images/neutralImage.png", "images/neutralImage.png", new Dimension(F_buttonSize, F_buttonSize));
-        bottomButtonList[2] = new ImageButton("images/figureEmpty.png", "images/figureFilled.png", new Dimension(F_buttonSize, F_buttonSize));
+        bottomButtonList[0] = new ImageButton(userDirectory + "images/brushSize.png", userDirectory + "images/brushSize.png", new Dimension(F_buttonSize, F_buttonSize));
+        bottomButtonList[1] = new ImageButton(userDirectory + "images/neutralImage.png", userDirectory + "images/neutralImage.png", new Dimension(F_buttonSize, F_buttonSize));
+        bottomButtonList[2] = new ImageButton(userDirectory + "images/figureEmpty.png", userDirectory + "images/figureFilled.png", new Dimension(F_buttonSize, F_buttonSize));
 
         setUpBottomButtonListener();
         for(int i = 0; i < bottomButtonList.length; i++) {
