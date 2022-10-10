@@ -24,14 +24,15 @@ public class Client extends UnicastRemoteObject implements Serializable{
     private String NamingServerPort;
     private String remoteMethodName; // we want to get all methods from whiteboardrmi server.
     private String thisRMIName = "client";
-    public static String userName = "New User"; //static, one client can have only one username
+    public String userName; //static, one client can have only one username
     public String SELF_RMI_ADDRESS;  // RMI address of this client instance, so we can add this client to RMI server's object list.
 
-    protected Client(String NamingServerIP, String NamingServerPort) throws RemoteException {
+    protected Client(String userName, String NamingServerIP, String NamingServerPort) throws RemoteException {
+        this.userName = userName;
         this.NamingServerIP = NamingServerIP;
         this.NamingServerPort = NamingServerPort;
         this.remoteMethodName = "whiteboardrmi";
-        this.thisRMIName = "client";
+        this.thisRMIName = userName;
     }
 
     public static void main(String [] args) {
@@ -40,8 +41,9 @@ public class Client extends UnicastRemoteObject implements Serializable{
         String NamingServerIP = "localhost";
         String NamingServerPort = "2000";
         Client client;
+        String userName = args[0];
         try {
-            client = new Client(NamingServerIP, NamingServerPort);
+            client = new Client(userName, NamingServerIP, NamingServerPort);
         }
         catch (RemoteException e){
             e.printStackTrace();

@@ -3,6 +3,7 @@ package client;
 import ComponentGUI.WhiteBoardComponent;
 import remote.iClient;
 import remote.iServer;
+import server.UserSTATUS;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -21,7 +22,7 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     private String username;
     private ClientUI clientUI;
 
-    protected ClientRMI(iServer whiteboard, String username) throws RemoteException {
+    public ClientRMI(iServer whiteboard, String username) throws RemoteException {
         super();
         this.whiteboard = whiteboard;
         this.username = username;
@@ -29,6 +30,7 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     }
 
     public boolean addMeToWhiteBoardServer(String userName, String RMI_URL){
+
         try {
             whiteboard.addUser(userName, RMI_URL);
         }

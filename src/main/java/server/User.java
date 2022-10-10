@@ -8,13 +8,8 @@ import remote.iClient;
  * User joined the room is always at status WAITING, only approved by MANAGER, it changes to USER.
  */
 public class User {
-    enum STATUS {
-        WAITING,
-        MANAGER,
-        USER,
-    }
     //public STATUS status = STATUS.WAITING;
-    public STATUS status = STATUS.USER; // FOR DEBUG PURPOSE ^^
+    public UserSTATUS status = UserSTATUS.USER; // FOR DEBUG PURPOSE ^^
     public String name;
     public iClient client;
 
@@ -24,13 +19,13 @@ public class User {
     }
 
     // only use this constructor for manager.
-    public User (String name, iClient client, STATUS s) {
+    public User (String name, iClient client, UserSTATUS s) {
         this.name = name;
         this.client = client;
         this.status = s;
     }
 
-    public void changeStatue(STATUS s){
+    public void changeStatue(UserSTATUS s){
         this.status = s;
     }
 }

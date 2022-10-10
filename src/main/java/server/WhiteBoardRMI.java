@@ -19,29 +19,40 @@ import java.util.ArrayList;
 public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
     private ArrayList<User> userList = new ArrayList<User>();
+
+    // To store a list of history methods for new users to run.
+    private ArrayList<MethodRunner> history_methods = new ArrayList<>();
+
     protected WhiteBoardRMI() throws RemoteException {
         super();
     }
 
 
     @Override
-    public Boolean addUser(String name, String lookUpURL) throws RemoteException {
+    public UserSTATUS addUser(String name, String lookUpURL) throws RemoteException {
         iClient newClient;
         try {
             newClient = (iClient)Naming.lookup(lookUpURL);
         } catch (RemoteException | NotBoundException | MalformedURLException e) {
             e.printStackTrace();
-            return false;
+            return UserSTATUS.ERROR;
         }
         User usr;
         // if first enter the room, make it manager
         if (userList.size()==0) {
-            usr = new User(name, newClient, User.STATUS.MANAGER);}
+            usr = new User(name, newClient, UserSTATUS.MANAGER.MANAGER);}
         else {
-            usr = new User(name, newClient); }
+            usr = new User(name, newClient);
+
+            // if not manager, load and catchup with current progress
+            for (MethodRunner mr : history_methods) {
+                mr.run(usr);
+            }
+        }
+
         userList.add(usr);
         System.out.println("Successfully add User to server, user Status: " + usr.status);
-        return true;
+        return usr.status;
     }
 
     @Override
@@ -52,6 +63,13 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
                 u.client.local_sendChatMessage(username, t);
             }
         }
+        // add all executed methods into an arraylist of history
+        history_methods.add(new MethodRunner() {
+            @Override
+            public void run(User u) throws RemoteException {
+                u.client.local_sendChatMessage(username, t);
+            }
+        });
     }
 
     @Override
@@ -59,11 +77,18 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         for (User u:userList){
             u.client.local_drawShape(mode, x1, y1, x2, y2);
         }
+        // add all executed methods into an arraylist of history
+        history_methods.add(new MethodRunner() {
+            @Override
+            public void run(User u) throws RemoteException {
+                u.client.local_drawShape(mode, x1, y1, x2, y2);
+            }
+        });
     }
 
     // check if user is authenticated
     private boolean checkApproved(User u){
-        if (u.status!= User.STATUS.WAITING){
+        if (u.status!= UserSTATUS.WAITING){
             return true;
         }
         return false;
@@ -71,7 +96,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
     // check if it's manager
     private boolean checkManager(User u){
-        if (u.status == User.STATUS.MANAGER){
+        if (u.status == UserSTATUS.MANAGER){
             return true;
         }
         return false;
