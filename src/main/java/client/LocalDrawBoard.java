@@ -2,7 +2,8 @@ package client;
 
 import ComponentGUI.ChatPanel;
 import ComponentGUI.ImageButton;
-import ComponentGUI.WhiteBoardComponent;
+import ComponentGUI.UserPanel;
+import ComponentGUI.LocalDrawBoardComponent;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -14,7 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Paths;
 
-public class MyFrame extends JFrame {
+public class LocalDrawBoard extends JFrame {
     public final int F_buttonSize = 50;
     public final String userDirectory = Paths.get("")
             .toAbsolutePath()
@@ -32,12 +33,13 @@ public class MyFrame extends JFrame {
 
     private ChatPanel chatPanel;
     private ClientRMI clientRMI;
-    private WhiteBoardComponent whiteBoard;
+    private LocalDrawBoardComponent whiteBoard;
+    private UserPanel userPanel;
 
 
     //Icons variable
 
-    public MyFrame(ClientRMI clientRMI) {
+    public LocalDrawBoard(ClientRMI clientRMI) {
         mainPanel = new JPanel();
         this.clientRMI = clientRMI;
 
@@ -97,7 +99,7 @@ public class MyFrame extends JFrame {
         leftPanel.add(spacer2, new GridConstraints(leftButtonList.length+1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
 
-        whiteBoard = new WhiteBoardComponent(clientRMI);
+        whiteBoard = new LocalDrawBoardComponent(clientRMI);
         whiteBoard.setBorder(new EmptyBorder(50, 50, 50, 50));
         whiteBoard.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(whiteBoard, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
@@ -123,9 +125,13 @@ public class MyFrame extends JFrame {
         final Spacer spacer4 = new Spacer();
         bottomPanel.add(spacer4, new GridConstraints(0, bottomButtonList.length+1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 
+        // display chat/user panel
+        chatPanel = new ChatPanel(clientRMI, this);
+        userPanel = new UserPanel(clientRMI, this);
 
-        chatPanel = new ChatPanel(clientRMI);
-        mainPanel.add(chatPanel, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK |  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK |GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        // at begining, display userpanel only.
+        mainPanel.add(userPanel, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK |  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK |GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+
     }
 
     private void setUpLeftButtonListener(){
@@ -134,8 +140,8 @@ public class MyFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                whiteBoard.setDrawMode(WhiteBoardComponent.drawMode.SHAPE);
-                whiteBoard.setShapeMode(WhiteBoardComponent.shapeMode.RECTANGLE);
+                whiteBoard.setDrawMode(LocalDrawBoardComponent.drawMode.SHAPE);
+                whiteBoard.setShapeMode(LocalDrawBoardComponent.shapeMode.RECTANGLE);
             }
         });
 
@@ -144,8 +150,8 @@ public class MyFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                whiteBoard.setDrawMode(WhiteBoardComponent.drawMode.SHAPE);
-                whiteBoard.setShapeMode(WhiteBoardComponent.shapeMode.ELLIPSE);
+                whiteBoard.setDrawMode(LocalDrawBoardComponent.drawMode.SHAPE);
+                whiteBoard.setShapeMode(LocalDrawBoardComponent.shapeMode.ELLIPSE);
             }
         });
 
@@ -154,8 +160,8 @@ public class MyFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                whiteBoard.setDrawMode(WhiteBoardComponent.drawMode.SHAPE);
-                whiteBoard.setShapeMode(WhiteBoardComponent.shapeMode.TRIANGLE);
+                whiteBoard.setDrawMode(LocalDrawBoardComponent.drawMode.SHAPE);
+                whiteBoard.setShapeMode(LocalDrawBoardComponent.shapeMode.TRIANGLE);
             }
         });
 
@@ -164,8 +170,8 @@ public class MyFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                whiteBoard.setDrawMode(WhiteBoardComponent.drawMode.SHAPE);
-                whiteBoard.setShapeMode(WhiteBoardComponent.shapeMode.LINE);
+                whiteBoard.setDrawMode(LocalDrawBoardComponent.drawMode.SHAPE);
+                whiteBoard.setShapeMode(LocalDrawBoardComponent.shapeMode.LINE);
             }
         });
 
@@ -174,7 +180,7 @@ public class MyFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                whiteBoard.setDrawMode(WhiteBoardComponent.drawMode.POLYGON);
+                whiteBoard.setDrawMode(LocalDrawBoardComponent.drawMode.POLYGON);
             }
         });
 
@@ -183,7 +189,7 @@ public class MyFrame extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                whiteBoard.setDrawMode(WhiteBoardComponent.drawMode.FREE);
+                whiteBoard.setDrawMode(LocalDrawBoardComponent.drawMode.FREE);
             }
         });
     }
@@ -221,12 +227,38 @@ public class MyFrame extends JFrame {
         return chatPanel;
     }
 
-    public WhiteBoardComponent getWhiteBoard(){
+    public UserPanel getUserPanel(){
+        return userPanel;
+    }
+
+    public LocalDrawBoardComponent getWhiteBoard(){
         return whiteBoard;
     }
 
+    public void SwitchToChatPanel(){
+        mainPanel.remove(userPanel);
+        mainPanel.add(chatPanel, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK |  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK |GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+    public void SwitchToUserPanel(){
+        mainPanel.remove(chatPanel);
+        mainPanel.add(userPanel, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK |  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK |GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    public void DisplayMessage(String msg){
+        JOptionPane.showMessageDialog(null, msg);
+    }
+
+    public void DisableUI_WithMessage(String msg){
+        DisplayMessage(msg);
+        this.setEnabled(false);
+    }
+
     public static void main(String[] args) {
-        JFrame frame = new MyFrame(null);
+        JFrame frame = new LocalDrawBoard(null);
         frame.setVisible(true);
     }
 }

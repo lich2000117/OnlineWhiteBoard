@@ -1,6 +1,6 @@
 package server;
 
-import ComponentGUI.WhiteBoardComponent;
+import ComponentGUI.LocalDrawBoardComponent;
 import remote.iClient;
 import remote.iServer;
 
@@ -10,6 +10,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A WhiteBoard RMI class, that implements all methods needed for clients to interact with server.
@@ -18,7 +20,7 @@ import java.util.ArrayList;
  */
 public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
-    private ArrayList<User> userList = new ArrayList<User>();
+    public static ArrayList<User> userList = new ArrayList<User>();
 
     // To store a list of history methods for new users to run.
     private ArrayList<MethodRunner> history_methods = new ArrayList<>();
@@ -29,7 +31,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
 
     @Override
-    public UserSTATUS addUser(String name, String lookUpURL) throws RemoteException {
+    public UserSTATUS handle_addUser(String name, String lookUpURL) throws RemoteException {
         iClient newClient;
         try {
             newClient = (iClient)Naming.lookup(lookUpURL);
@@ -43,20 +45,20 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
             usr = new User(name, newClient, UserSTATUS.MANAGER.MANAGER);}
         else {
             usr = new User(name, newClient);
-
             // if not manager, load and catchup with current progress
             for (MethodRunner mr : history_methods) {
                 mr.run(usr);
             }
         }
 
-        userList.add(usr);
-        System.out.println("Successfully add User to server, user Status: " + usr.status);
+        //add user to array list and update userlist panel for every client
+        AddUser_Notify(usr);
         return usr.status;
     }
 
+
     @Override
-    public void broadCastChat(String username, String t) throws RemoteException {
+    public void handle_broadCastChat(String username, String t) throws RemoteException {
         // notify every user to update their chatbox
         for (User u:userList){
             if (checkApproved(u)) {
@@ -73,7 +75,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     }
 
     @Override
-    public void broadDrawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException {
+    public void broadDrawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException {
         for (User u:userList){
             u.client.local_drawShape(mode, x1, y1, x2, y2);
         }
@@ -86,6 +88,17 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         });
     }
 
+    @Override
+    public boolean kickUser(String userName) throws RemoteException {
+        User user = checkKickble(userName);
+        if (user!=null){
+            System.out.println("User found to be Kick");
+            RemoveUser_Notify(user);
+            return true;
+        };
+        return false;
+    }
+
     // check if user is authenticated
     private boolean checkApproved(User u){
         if (u.status!= UserSTATUS.WAITING){
@@ -94,11 +107,53 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         return false;
     }
 
+
     // check if it's manager
-    private boolean checkManager(User u){
-        if (u.status == UserSTATUS.MANAGER){
-            return true;
+    public User checkKickble(String uName){
+        // query the arraylist of user to get that user information.
+        User u;
+        try {
+            u = userList.stream().filter(user -> Objects.equals(user.name, uName)).collect(Collectors.toList()).get(0);
         }
-        return false;
+        catch (IndexOutOfBoundsException e){
+            // user is already removed, cannot kick
+            return null;
+        }
+
+        // can only kick non Manager user
+        if (u.status != UserSTATUS.MANAGER){
+            return u;
+        }
+        return null;
+    }
+
+
+    /**
+     * To method two call whenever want to add or remove a user and notify all clients and everyplace
+     * that may have this user information.
+     * @param usr
+     * @throws RemoteException
+     */
+    private static void AddUser_Notify(User usr) throws RemoteException {
+        userList.add(usr);
+        ArrayList<String> names = userList.stream()
+                .map(user -> user.name)
+                .collect(Collectors.toCollection(ArrayList::new));
+        for (User u:userList){
+            u.client.local_updateUserList(names);
+        }
+        System.out.println("Successfully add User to server, user Status: " + usr.status);
+    }
+    private static void RemoveUser_Notify(User usr) throws RemoteException {
+        userList.remove(usr);
+        ArrayList<String> names = userList.stream()
+                .map(user -> user.name)
+                .collect(Collectors.toCollection(ArrayList::new));
+        for (User u:userList){
+            u.client.local_updateUserList(names);
+        }
+        // ask usr that client to quit.
+        usr.client.been_kicked();
+        System.out.println("Successfully remove User from server");
     }
 }

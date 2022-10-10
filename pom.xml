@@ -19,7 +19,7 @@
         <artifactId>maven-assembly-plugin</artifactId> <executions>
         <execution> <id>build-a</id> <configuration>
             <archive> <manifest>
-                <mainClass>client.MainFrame</mainClass> </manifest>
+                <mainClass>client.ClientRMI</mainClass> </manifest>
             </archive> <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef> </descriptorRefs>
             <!-- <appendAssemblyId>false</appendAssemblyId> --> <finalName>client</finalName>

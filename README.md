@@ -2,7 +2,21 @@
 
 ## RMI usage:
 
-Remote: object/method repository 
+```Want to send a chat:
+    Client: call {local method} request_sendChat(){Whiteboard as w, w.brodcast_Chat() (RMI)}
+    ----(which call a iServer RMI method)>>>> 
+    Whiteboard: call {local method} brodcast_Chat(){ for c:Client, c.DrawChat() (RMI)}
+    
+    By doing so, we use Client to call broadcast messages method defined in whiteboard, and whiteboard can 
+    call clients method to draw chat on their client side.
+    
+    -- Key: 
+    Need to store Whiteboard.RMI address in ever Client.
+    A single WhiteBoard instance need an ArrayList of Client.RMI addresses.
+```
+
+### Remote: 
+object/method repository 
 
 
 ### Server:
@@ -35,4 +49,8 @@ mvn clean;
 mvn package;
 java -cp target/client-jar-with-dependencies.jar client.Client
 `
+
+## Assumptions:
+- Every user/client has unique names, and their RMI addresses are of "rmi://rmiServerIP:ServerPort/username"
+- so when removing user, only has their username is sufficient.
 

@@ -1,7 +1,6 @@
 package remote;
 
-import ComponentGUI.WhiteBoardComponent;
-import server.User;
+import ComponentGUI.LocalDrawBoardComponent;
 import server.UserSTATUS;
 
 import java.rmi.Remote;
@@ -16,7 +15,8 @@ import java.rmi.RemoteException;
  *
  */
 public interface iServer extends Remote {
-    UserSTATUS addUser(String name, String rmiURL) throws RemoteException;
-    void broadCastChat(String u, String t) throws RemoteException;
-    void broadDrawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException;
+    UserSTATUS handle_addUser(String name, String rmiURL) throws RemoteException;
+    void handle_broadCastChat(String u, String t) throws RemoteException;
+    void broadDrawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException;
+    boolean kickUser(String userName) throws RemoteException;
 }

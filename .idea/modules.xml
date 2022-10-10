@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/OnlineWhiteBoard.iml" filepath="$PROJECT_DIR$/.idea/OnlineWhiteBoard.iml" />
+      <module fileurl="file://$PROJECT_DIR$/OnlineWhiteBoard.iml" filepath="$PROJECT_DIR$/OnlineWhiteBoard.iml" />
     </modules>
   </component>
 </project>

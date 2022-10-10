@@ -1,20 +1,22 @@
 package client;
 
-import ComponentGUI.WhiteBoardComponent;
+import ComponentGUI.LocalDrawBoardComponent;
 import remote.iClient;
 import remote.iServer;
 
+import java.util.ArrayList;
+
 public class ClientUI {
-    private MyFrame frame;
+    private LocalDrawBoard frame;
     private iServer whiteboard;
     private iClient clientRMI;  // use this RMI interface to interact with remote server.
 
     public ClientUI(iServer whiteboard, ClientRMI clientRMI) {
         this.clientRMI = clientRMI;
-        this.frame = new MyFrame(clientRMI);
+        this.frame = new LocalDrawBoard(clientRMI);
     }
 
-    public void drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2){
+    public void drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2){
         this.frame.getWhiteBoard().drawShape(mode, x1, y1, x2, y2);
         System.out.println("Draw on Board");
     }
@@ -23,7 +25,11 @@ public class ClientUI {
         this.frame.getChatPanel().addMessage(username, message);
     }
 
-    public void addMessageToChat(String m){
+    public void updateUserList(ArrayList<String> userList) {
+        this.frame.getUserPanel().updateUserList(userList);
+    }
 
+    public void kickClient(){
+        this.frame.DisableUI_WithMessage("You are kicked.");
     }
 }

@@ -10,7 +10,7 @@ import java.awt.geom.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class WhiteBoardComponent extends JPanel {
+public class LocalDrawBoardComponent extends JPanel {
     private ClientRMI clientRMI;
     private ArrayList<Shape> shapeList = new ArrayList<>();
     private drawMode dMode = drawMode.DEFAULT;
@@ -18,7 +18,7 @@ public class WhiteBoardComponent extends JPanel {
 
     private int x1,y1,x2,y2 = 0;
 
-    public WhiteBoardComponent(ClientRMI clientRMI){
+    public LocalDrawBoardComponent(ClientRMI clientRMI){
         this.clientRMI = clientRMI;
         this.setPreferredSize(new Dimension(500, 500));
 
@@ -65,7 +65,7 @@ public class WhiteBoardComponent extends JPanel {
     }
     public void setShapeMode(shapeMode mode){this.sMode = mode;}
 
-    public void drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2){
+    public void drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2){
         int true_x1 = Math.min(x1,x2);
         int true_y1 = Math.min(y1,y2);
         int width=Math.abs(x1-x2);
