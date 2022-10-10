@@ -14,8 +14,8 @@ public class ClientUI {
         this.frame = new MyFrame(clientRMI);
     }
 
-    public void drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2){
-        this.frame.getWhiteBoard().drawShape(mode, x1, y1, x2, y2);
+    public void drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb){
+        this.frame.getWhiteBoard().drawShape(mode, x1, y1, x2, y2, brushSize, filling, rgb);
         System.out.println("Draw on Board");
     }
 

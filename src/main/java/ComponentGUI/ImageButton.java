@@ -1,13 +1,17 @@
 package ComponentGUI;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
 public class ImageButton extends JButton {
     ImageIcon defaultIcon;
     ImageIcon selectedIcon;
+    private boolean isSelected = false;
 
     public ImageButton(String defaultImagePath, String selectedImagePath, Dimension dimension){
         Image img = new ImageIcon(defaultImagePath).getImage();
@@ -21,22 +25,18 @@ public class ImageButton extends JButton {
         setIcon(defaultIcon);
         setBorder(BorderFactory.createEmptyBorder());
         setContentAreaFilled(false);
-
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-
-                select();
-            }
-        });
     }
 
+    public boolean isSelected(){
+        return isSelected;
+    }
     public void select(){
+        isSelected = true;
         setIcon(selectedIcon);
     }
 
     public void unselect(){
+        isSelected = false;
         setIcon(defaultIcon);
     }
 }

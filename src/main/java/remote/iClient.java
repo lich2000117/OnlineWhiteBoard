@@ -17,8 +17,8 @@ import java.rmi.RemoteException;
 public interface iClient extends Remote {
 
     // tell server a message wants to be added, let server tell all users.
-    boolean request_drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException;
-    boolean local_drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException;
+    boolean request_drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException;
+    boolean local_drawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException;
 
     boolean request_sendChatMessage(String username, String message) throws RemoteException;
     boolean local_sendChatMessage(String username, String message) throws RemoteException;

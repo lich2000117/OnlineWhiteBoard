@@ -55,9 +55,9 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     }
 
     @Override
-    public void broadDrawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException {
+    public void broadDrawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException {
         for (User u:userList){
-            u.client.local_drawShape(mode, x1, y1, x2, y2);
+            u.client.local_drawShape(mode, x1, y1, x2, y2, brushSize, filling, rgb);
         }
     }
 

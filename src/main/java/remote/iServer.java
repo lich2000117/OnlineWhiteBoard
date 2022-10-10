@@ -16,5 +16,5 @@ import java.rmi.RemoteException;
 public interface iServer extends Remote {
     Boolean addUser(String name, String rmiURL) throws RemoteException;
     void broadCastChat(String u, String t) throws RemoteException;
-    void broadDrawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2) throws RemoteException;
+    void broadDrawShape(WhiteBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException;
 }
