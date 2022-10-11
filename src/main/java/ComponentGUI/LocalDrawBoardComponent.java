@@ -26,7 +26,7 @@ public class LocalDrawBoardComponent extends JPanel {
 
     public LocalDrawBoardComponent(ClientRMI clientRMI){
         this.clientRMI = clientRMI;
-        this.setPreferredSize(new Dimension(500, 500));
+        this.setPreferredSize(new Dimension(1024, 768));
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -120,9 +120,6 @@ public class LocalDrawBoardComponent extends JPanel {
     public void paint(Graphics g){
         Graphics2D g2D = (Graphics2D) g;
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        g2D.drawRect(0, 0, 490, 490);
-
         for(int i = 0; i < shapeList.size(); i++){
             g2D.setStroke(new BasicStroke(shapeListBrushSize.get(i)));
             g2D.setColor(shapeListColor.get(i));

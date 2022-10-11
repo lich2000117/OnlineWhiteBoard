@@ -48,6 +48,7 @@ public class LocalDrawBoard extends JFrame {
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+        //this.setResizable(false);
     }
 
     private void setupUI() {
@@ -92,13 +93,13 @@ public class LocalDrawBoard extends JFrame {
         leftPanel.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         leftPanel.add(spacer2, new GridConstraints(leftButtonList.length+1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-
+        leftPanel.setBackground(Color.BLUE);
 
         whiteBoard = new LocalDrawBoardComponent(clientRMI);
-        whiteBoard.setBorder(new EmptyBorder(50, 50, 50, 50));
         whiteBoard.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        mainPanel.add(whiteBoard, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
+        mainPanel.add(whiteBoard, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED | GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED | GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        mainPanel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
 
         bottomPanel = new JPanel();
         bottomPanel.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
@@ -125,10 +126,11 @@ public class LocalDrawBoard extends JFrame {
         // display chat/user panel
         chatPanel = new ChatPanel(clientRMI, this);
         userPanel = new UserPanel(clientRMI, this);
-
         // at begining, display chatPanel only.
         mainPanel.add(chatPanel, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK |  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK |GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
+
+        bottomPanel.setVisible(false);
     }
 
     private void setUpLeftButtonListener(){

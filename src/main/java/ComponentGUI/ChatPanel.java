@@ -27,7 +27,7 @@ public class ChatPanel extends JPanel {
         this.clientRMI = clientRMI;
         this.setPreferredSize(new Dimension(200, 500));
 
-        this.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+        this.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
 
         TopRightLabel = new JLabel();
         TopRightLabel.setText(clientRMI.getUsername() + ", Welcome!");
@@ -71,7 +71,7 @@ public class ChatPanel extends JPanel {
 
 
         sendMsgButton = new JButton();
-        sendMsgButton.setText("V");
+        sendMsgButton.setText("SEND");
         inputTextPanel.add(sendMsgButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.SIZEPOLICY_CAN_SHRINK, GridConstraints.SIZEPOLICY_CAN_SHRINK, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 
 

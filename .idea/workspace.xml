@@ -5,15 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="625b89b4-feea-467d-a551-9114af630c3a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__asm_asm_3_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__asm_asm_commons_3_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__asm_asm_tree_3_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_googlecode_json_simple_json_simple_1_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_forms_rt_7_0_3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_jgoodies_forms_1_1_preview.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__jdom_jdom_1_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_10.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/ChatPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/ChatPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/UserPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/UserPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/ClientRMI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/ClientRMI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/LocalDrawBoardComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/LocalDrawBoardComponent.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/LocalDrawBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/LocalDrawBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/remote/iServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/remote/iServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/UserSTATUS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/UserSTATUS.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/server/WhiteBoardRMI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/server/WhiteBoardRMI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +71,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.JoinDialogue">
+  <component name="RunManager" selected="Application.LocalDrawBoard">
     <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="client.Client" />
       <module name="OnlineWhiteBoard" />
@@ -146,8 +150,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.JoinDialogue" />
         <item itemvalue="Application.LocalDrawBoard" />
+        <item itemvalue="Application.JoinDialogue" />
         <item itemvalue="Application.MainFrame" />
         <item itemvalue="Application.Client" />
         <item itemvalue="Application.Server" />
@@ -165,7 +169,7 @@
       <workItem from="1665381230765" duration="3532000" />
       <workItem from="1665393993229" duration="12924000" />
       <workItem from="1665462800649" duration="782000" />
-      <workItem from="1665463591132" duration="2887000" />
+      <workItem from="1665463591132" duration="8230000" />
     </task>
     <servers />
   </component>
