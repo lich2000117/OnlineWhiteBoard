@@ -21,6 +21,18 @@ public class ClientUI {
         System.out.println("Draw on Board");
     }
 
+    public void drawPolygon(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb){
+        this.frame.getWhiteBoard().drawPoly(lstX, lstY, brushSize, filling, rgb);
+    }
+
+    public void drawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb){
+        this.frame.getWhiteBoard().drawFree(lstX, lstY, brushSize, filling, rgb);
+    }
+
+    public void drawText(String text, int x, int y){
+        this.frame.getWhiteBoard().drawText(text, x, y);
+    }
+
     public void sendChatMessage(String username, String message){
         this.frame.getChatPanel().addMessage(username, message);
     }

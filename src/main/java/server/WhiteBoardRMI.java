@@ -103,6 +103,47 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         });
     }
 
+    @Override
+    public void broadDrawPolygon(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException {
+        for (User u:userList){
+            u.client.local_drawPolygon(lstX, lstY, brushSize, filling, rgb);
+        }
+        // add all executed methods into an arraylist of history
+        history_methods.add(new MethodRunner() {
+            @Override
+            public void run(User u) throws RemoteException {
+                u.client.local_drawPolygon(lstX, lstY, brushSize, filling, rgb);
+            }
+        });
+    }
+
+    @Override
+    public void broadDrawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException {
+        for (User u:userList){
+            u.client.local_drawFree(lstX, lstY, brushSize, filling, rgb);
+        }
+        // add all executed methods into an arraylist of history
+        history_methods.add(new MethodRunner() {
+            @Override
+            public void run(User u) throws RemoteException {
+                u.client.local_drawFree(lstX, lstY, brushSize, filling, rgb);
+            }
+        });
+    }
+
+    @Override
+    public void broadDrawText(String text, int x, int y) throws RemoteException{
+        for (User u:userList){
+            u.client.local_drawText(text, x, y);
+        }
+        // add all executed methods into an arraylist of history
+        history_methods.add(new MethodRunner() {
+            @Override
+            public void run(User u) throws RemoteException {
+                u.client.local_drawText(text, x, y);
+            }
+        });
+    }
 
     // check if user is approved in the chat
     private boolean checkApproved(User u){
