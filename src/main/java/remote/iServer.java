@@ -16,6 +16,7 @@ import java.rmi.RemoteException;
  */
 public interface iServer extends Remote {
     UserSTATUS handle_addUser(String name, String rmiURL) throws RemoteException;
+    boolean check_uniqueUserName(String name) throws RemoteException;
     void handle_broadCastChat(String u, String t) throws RemoteException;
     void broadDrawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException;
     boolean kickUser(String subjectUser, String targetUser) throws RemoteException;

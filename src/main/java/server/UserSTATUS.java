@@ -4,5 +4,5 @@ public enum UserSTATUS {
     WAITING,
     MANAGER,
     USER,
-    ERROR,
+    DUPNAME, ERROR,
 }

@@ -99,7 +99,10 @@ public class UserPanel extends JPanel {
         System.out.println(names);
         userList.setListData(names.toArray());
         // Check if it's manager now, update GUI.
+        System.out.println("Cuurent Role");
+        System.out.println(clientRMI.userStatus);
         if (clientRMI.userStatus == UserSTATUS.MANAGER) {
+            System.out.println("Update Manager GUI");
             // only manager can have kick function
             KickUserFunction();
         }

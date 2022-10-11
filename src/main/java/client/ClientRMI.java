@@ -31,15 +31,24 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
         clientUI = new ClientUI(whiteboard, this);
     }
 
+    // return true if success
     public boolean addMeToWhiteBoardServer(String userName, String RMI_URL){
-
         try {
-            userStatus = whiteboard.handle_addUser(userName, RMI_URL);
+            this.userStatus = whiteboard.handle_addUser(userName, RMI_URL);
+            if (this.userStatus==UserSTATUS.ERROR){
+                return false;
+            };
         }
         catch (Exception e){
             System.out.println("Cannot Connect to Whiteboard Server.");
             e.printStackTrace();
             return false;
+        }
+        try {
+            whiteboard.handle_broadCastChat("[System", "User: "+ userName+", has joined!]");
+        }
+        catch (Exception e){
+            //ignore;
         }
         return true;
     }
@@ -57,6 +66,12 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
             clientUI.displayAlert("Kick unknown Failed!");
             e.printStackTrace();
             return false;
+        }
+        try {
+            whiteboard.handle_broadCastChat("[System", "User: " + targetuserName + ", was Kicked Out!]");
+        }
+        catch (Exception e){
+            //ignore;
         }
         return true;
     }

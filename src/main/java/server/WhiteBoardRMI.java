@@ -29,9 +29,21 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         super();
     }
 
+    @Override
+    public boolean check_uniqueUserName(String name) throws RemoteException {
+        // check uf userName is unique, if it's not unique, DO NOT add RMI since RMI uses its username.
+        if (userList.stream().filter(user -> Objects.equals(user.name, name)).collect(Collectors.toList()).size()!=0){
+            // if username already exists
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     public UserSTATUS handle_addUser(String name, String lookUpURL) throws RemoteException {
+
+        // try to establish RMI connection.
         iClient newClient;
         try {
             newClient = (iClient)Naming.lookup(lookUpURL);
@@ -40,6 +52,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
             return UserSTATUS.ERROR;
         }
         User usr;
+
         // if first enter the room, make it manager
         if (userList.size()==0) {
             usr = new User(name, newClient, UserSTATUS.MANAGER.MANAGER);}
@@ -55,6 +68,8 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         AddUser_Notify(usr);
         return usr.status;
     }
+
+
 
 
     @Override

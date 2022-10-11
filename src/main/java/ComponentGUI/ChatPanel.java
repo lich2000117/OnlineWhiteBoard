@@ -95,6 +95,6 @@ public class ChatPanel extends JPanel {
     }
 
     public void addMessage(String clientName, String msg){
-        chatbox.setText(chatbox.getText() + "\n" + clientName + ": "+ msg);
+        chatbox.setText(chatbox.getText() + "\n" + clientName + ": "+ msg+"\n");
     }
 }
