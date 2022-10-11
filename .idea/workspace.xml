@@ -5,21 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="625b89b4-feea-467d-a551-9114af630c3a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/ImageColoredButton.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/PickBrushSizeDialog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__asm_asm_3_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__asm_asm_commons_3_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__asm_asm_tree_3_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_googlecode_json_simple_json_simple_1_1_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_forms_rt_7_0_3.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_jgoodies_forms_1_1_preview.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__jdom_jdom_1_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_10.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/ImageButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/ImageButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OnlineWhiteBoard.iml" beforeDir="false" afterPath="$PROJECT_DIR$/OnlineWhiteBoard.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/LocalDrawBoardComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/LocalDrawBoardComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ComponentGUI/UserPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ComponentGUI/UserPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/ClientRMI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/ClientRMI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/ClientUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/ClientUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/LocalDrawBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/LocalDrawBoard.java" afterDir="false" />
@@ -67,11 +56,12 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/lee/Dropbox/Mac/Documents/OnlineWhiteBoard&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/x/idea-IC-222.3345.118/lib/forms_rt.jar&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.repository.indices&quot;
   }
 }</component>
   <component name="RecentsManager">

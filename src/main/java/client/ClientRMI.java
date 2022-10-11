@@ -87,6 +87,55 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
         return true;
     }
 
+
+    @Override
+    public boolean request_drawPolygon(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException {
+        // 1. ask whiteboard to draw rectangle
+        whiteboard.broadDrawPolygon(lstX, lstY, brushSize, filling, rgb);
+        System.out.println("Sent draw to Server WhiteBoard ");
+        return true;
+    }
+
+    @Override
+    public boolean local_drawPolygon(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException {
+        // 2. whiteboard call this function to draw local rectangle
+        clientUI.drawPolygon(lstX, lstY, brushSize, filling, rgb);
+        System.out.println("Called by Server to draw local ");
+        return true;
+    }
+
+    @Override
+    public boolean request_drawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException {
+        // 1. ask whiteboard to draw rectangle
+        whiteboard.broadDrawFree(lstX, lstY, brushSize, filling, rgb);
+        System.out.println("Sent draw to Server WhiteBoard ");
+        return true;
+    }
+
+    @Override
+    public boolean local_drawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException {
+        // 2. whiteboard call this function to draw local rectangle
+        clientUI.drawFree(lstX, lstY, brushSize, filling, rgb);
+        System.out.println("Called by Server to draw local ");
+        return true;
+    }
+
+    @Override
+    public boolean request_drawText(String text, int x, int y) throws RemoteException {
+        // 1. ask whiteboard to draw rectangle
+        whiteboard.broadDrawText(text, x, y);
+        System.out.println("Sent text to Server WhiteBoard ");
+        return true;
+    }
+
+    @Override
+    public boolean local_drawText(String text, int x, int y) throws RemoteException {
+        // 2. whiteboard call this function to draw local rectangle
+        clientUI.drawText(text, x , y);
+        System.out.println("Called by Server to text local ");
+        return true;
+    }
+
     @Override
     public boolean request_sendChatMessage(String username, String message) throws RemoteException {
         whiteboard.handle_broadCastChat(username, message);

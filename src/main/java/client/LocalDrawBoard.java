@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Paths;
+import java.rmi.RemoteException;
 
 public class LocalDrawBoard extends JFrame {
     public final int F_buttonSize = 50;
@@ -55,17 +56,19 @@ public class LocalDrawBoard extends JFrame {
 
 
         leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
+        leftPanel.setLayout(new GridLayoutManager(9, 1, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(leftPanel, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
 
-        leftButtonList = new ImageButton[6];
+        leftButtonList = new ImageButton[7];
         leftButtonList[0] = new ImageButton(userDirectory + "images/defaultSquare.png", userDirectory + "images/selectedSquare.png", new Dimension(F_buttonSize, F_buttonSize));
         leftButtonList[1] = new ImageButton(userDirectory + "images/defaultCircle.png", userDirectory + "images/selectedCircle.png", new Dimension(F_buttonSize, F_buttonSize));
         leftButtonList[2] = new ImageButton(userDirectory + "images/defaultTriangle.png", userDirectory + "images/selectedTriangle.png", new Dimension(F_buttonSize, F_buttonSize));
         leftButtonList[3] = new ImageButton(userDirectory + "images/defaultLine.png", userDirectory + "images/selectedLine.png", new Dimension(F_buttonSize, F_buttonSize));
         leftButtonList[4] = new ImageButton(userDirectory +"images/defaultPolygon.png", userDirectory + "images/selectedPolygon.png", new Dimension(F_buttonSize, F_buttonSize));
         leftButtonList[5] = new ImageButton(userDirectory + "images/defaultFree.png", userDirectory + "images/selectedFree.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[6] = new ImageButton(userDirectory + "images/defaultText.png", userDirectory + "images/selectedText.png", new Dimension(F_buttonSize, F_buttonSize));
+
 
 
         setUpLeftButtonListener();
@@ -189,6 +192,15 @@ public class LocalDrawBoard extends JFrame {
                 whiteBoard.setDrawMode(LocalDrawBoardComponent.drawMode.FREE);
             }
         });
+
+        leftButtonList[6].addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                whiteBoard.setDrawMode(LocalDrawBoardComponent.drawMode.TEXTMODE);
+            }
+        });
     }
 
     private void setUpBottomButtonListener() {
@@ -273,8 +285,12 @@ public class LocalDrawBoard extends JFrame {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new LocalDrawBoard(null);
-        frame.setVisible(true);
+        try{
+            JFrame frame = new LocalDrawBoard(new ClientRMI(null, "Me"));
+            frame.setVisible(true);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
