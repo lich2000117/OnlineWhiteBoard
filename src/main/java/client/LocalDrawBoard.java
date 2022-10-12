@@ -7,11 +7,10 @@ import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.io.File;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
 
@@ -21,6 +20,15 @@ public class LocalDrawBoard extends JFrame {
             .toAbsolutePath()
             .toString() + "/src/";
 
+    private JFrame frame = this;
+    private JFileChooser fileChooser = new JFileChooser();
+    private JMenuBar menuBar;
+    private JMenu menuFile;
+    private JMenuItem menuNew;
+    private JMenuItem menuOpen;
+    private JMenuItem menuSave;
+    private JMenuItem menuSaveAs;
+    private JMenuItem menuClose;
     private JPanel mainPanel;
 
 
@@ -49,11 +57,79 @@ public class LocalDrawBoard extends JFrame {
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-        //this.setResizable(false);
+        this.setResizable(false);
     }
 
     private void setupUI() {
         mainPanel.setLayout(new GridLayoutManager(2, 3, new Insets(10, 10, 10, 10), -1, -1));
+
+
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "png", "gif", "jpeg");
+        fileChooser.setFileFilter(filter);
+
+        //SETUP MENU
+        menuBar = new JMenuBar();
+        menuFile = new JMenu("File");
+        menuFile.setMnemonic(KeyEvent.VK_ESCAPE);
+        menuBar.add(menuFile);
+
+        menuNew = new JMenuItem(new AbstractAction("New") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+        }});
+        menuNew.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+        menuFile.add(menuNew);
+
+        menuOpen = new JMenuItem(new AbstractAction("Open") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int returnVal = fileChooser.showOpenDialog(frame);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+
+                    //TODO
+                }
+            }
+        });
+        menuOpen.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        menuFile.add(menuOpen);
+
+        menuSave = new JMenuItem(new AbstractAction("Save") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(whiteBoard.fileName == null){
+                    saveAs();
+                } else{
+                    whiteBoard.savePaint();
+                }
+            }
+        });
+        menuSave.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        menuFile.add(menuSave);
+
+        menuSaveAs = new JMenuItem(new AbstractAction("Save as") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveAs();
+            }
+        });
+        menuSaveAs.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menuFile.add(menuSaveAs);
+
+        menuClose = new JMenuItem(new AbstractAction("Close") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            }
+        });
+        menuFile.add(menuClose);
+
+        setJMenuBar(menuBar);
 
 
         leftPanel = new JPanel();
@@ -104,15 +180,16 @@ public class LocalDrawBoard extends JFrame {
         mainPanel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
 
         bottomPanel = new JPanel();
-        bottomPanel.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
+        bottomPanel.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(bottomPanel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
 
-        bottomButtonList = new ImageButton[3];
+        bottomButtonList = new ImageButton[4];
         bottomButtonList[0] = new ImageButton(userDirectory + "images/brushSize.png", userDirectory + "images/brushSize.png", new Dimension(F_buttonSize, F_buttonSize));
         bottomButtonList[1] = new ImageButton(userDirectory + "images/figureEmpty.png", userDirectory + "images/figureFilled.png", new Dimension(F_buttonSize, F_buttonSize));
-        bottomButtonList[2] = new ImageColoredButton(userDirectory + "images/neutralImage.png", userDirectory + "images/neutralImage.png", new Dimension(F_buttonSize, F_buttonSize));
-        ((ImageColoredButton)bottomButtonList[2]).setColor(whiteBoard.getCurrentColor());
+        bottomButtonList[2] = new ImageButton(userDirectory + "images/defaultFont.png", userDirectory + "images/defaultFont.png", new Dimension(F_buttonSize, F_buttonSize));
+        bottomButtonList[3] = new ImageColoredButton(userDirectory + "images/neutralImage.png", userDirectory + "images/neutralImage.png", new Dimension(F_buttonSize, F_buttonSize));
+        ((ImageColoredButton)bottomButtonList[3]).setColor(whiteBoard.getCurrentColor());
 
 
         setUpBottomButtonListener();
@@ -133,6 +210,58 @@ public class LocalDrawBoard extends JFrame {
 
     }
 
+    private void setUpMenuListener(){
+        menuNew = new JMenuItem();
+        menuNew.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                System.out.println("");
+
+            }
+        });
+
+        menuOpen = new JMenuItem();
+        menuOpen.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+
+            }
+        });
+
+        menuSave = new JMenuItem();
+        menuSave.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+
+            }
+        });
+
+        menuSaveAs = new JMenuItem();
+        menuSaveAs.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+
+            }
+        });
+
+        menuClose = new JMenuItem();
+        menuClose.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+
+            }
+        });
+    }
     private void setUpLeftButtonListener(){
         leftButtonList[0].addMouseListener(new MouseAdapter() {
             @Override
@@ -235,12 +364,27 @@ public class LocalDrawBoard extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
+
+                PickFontDialog dial = new PickFontDialog(frame, whiteBoard.getCurrentFontName(), whiteBoard.getCurrentFontStyle(), whiteBoard.getCurrentFontSize());
+                String[] returnVal = dial.run();
+
+                whiteBoard.setCurrentFontName(returnVal[0]);
+                whiteBoard.setCurrentFontStyle(PickFontDialog.styleStringToInt(returnVal[1]));
+                whiteBoard.setCurrentFontSize(Integer.parseInt(returnVal[2]));
+            }
+        });
+
+        bottomButtonList[3].addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
                 JColorChooser colorChooser = new JColorChooser(whiteBoard.getCurrentColor());
                 ActionListener onOk = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         Color c = colorChooser.getColor();
-                        ((ImageColoredButton) bottomButtonList[2]).setColor(c);
+                        ((ImageColoredButton) bottomButtonList[3]).setColor(c);
                         whiteBoard.setCurrentColor(c);
                     }
                 };
@@ -299,6 +443,16 @@ public class LocalDrawBoard extends JFrame {
      */
     public int ConfirmWindow(String msg){
         return JOptionPane.showConfirmDialog(this,msg, "Alert", JOptionPane.YES_NO_OPTION);
+    }
+
+    private void saveAs(){
+        int returnVal = fileChooser.showSaveDialog(frame);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            whiteBoard.fileName = fileChooser.getSelectedFile().getAbsolutePath();
+            System.out.println(whiteBoard.fileName);
+
+            whiteBoard.savePaint();
+        }
     }
 
     public static void main(String[] args) {
