@@ -2,6 +2,7 @@ package ComponentGUI;
 
 import client.ClientRMI;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -9,12 +10,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class LocalDrawBoardComponent extends JPanel {
     private ClientRMI clientRMI;
 
+    public String fileName = null;
     private ArrayList<DrawingType> drawingTypeList = new ArrayList();
     private ArrayList<Shape> shapeList = new ArrayList<>();
     private ArrayList<Float> shapeListBrushSize = new ArrayList<>();
@@ -334,6 +339,22 @@ public class LocalDrawBoardComponent extends JPanel {
         printTextOnBoard(g2D, currentText, x1, y1, currentFontName, currentFontStyle, currentFontSize, currentColor);
         if (tempShape != null) {
             printShapeOnBoard(g2D, tempShape, currentBrushSize, currentFilling, currentColor);
+        }
+    }
+
+    // https://stackoverflow.com/questions/8202253/saving-a-java-2d-graphics-image-as-png-file
+    public void savePaint()
+    {
+        BufferedImage bImg = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D cg = bImg.createGraphics();
+        paintAll(cg);
+        try {
+            if (ImageIO.write(bImg, "png", new File(fileName)))
+            {
+                System.out.println("-- saved");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
