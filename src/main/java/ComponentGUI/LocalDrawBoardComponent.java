@@ -250,9 +250,6 @@ public class LocalDrawBoardComponent extends JPanel {
         super.paint(g);
         Graphics2D g2D = (Graphics2D) g;
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        for(int i = 0; i < shapeList.size(); i++){
-            g2D.setStroke(new BasicStroke(shapeListBrushSize.get(i)));
-            g2D.setColor(shapeListColor.get(i));
 
 
         int i = 0; int j = 0;
