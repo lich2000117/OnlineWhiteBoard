@@ -159,15 +159,15 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     }
 
     @Override
-    public void broadDrawText(String text, int x, int y) throws RemoteException{
+    public void broadDrawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException{
         for (User u:userList){
-            u.client.local_drawText(text, x, y);
+            u.client.local_drawText(text, x, y, name, style, size, rgb);
         }
         // add all executed methods into an arraylist of history
         history_methods.add(new MethodRunner() {
             @Override
             public void run(User u) throws RemoteException {
-                u.client.local_drawText(text, x, y);
+                u.client.local_drawText(text, x, y, name, style ,size , rgb);
             }
         });
     }
