@@ -136,17 +136,17 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     }
 
     @Override
-    public boolean request_drawText(String text, int x, int y) throws RemoteException {
+    public boolean request_drawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException {
         // 1. ask whiteboard to draw rectangle
-        whiteboard.broadDrawText(text, x, y);
+        whiteboard.broadDrawText(text, x, y, name , style, size, rgb);
         System.out.println("Sent text to Server WhiteBoard ");
         return true;
     }
 
     @Override
-    public boolean local_drawText(String text, int x, int y) throws RemoteException {
+    public boolean local_drawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException {
         // 2. whiteboard call this function to draw local rectangle
-        clientUI.drawText(text, x , y);
+        clientUI.drawText(text, x , y, name, style, size, rgb);
         System.out.println("Called by Server to text local ");
         return true;
     }
