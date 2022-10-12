@@ -28,7 +28,7 @@ public class JoinDialogue {
                 JOptionPane.PLAIN_MESSAGE,
                 null,
                 null,
-                "Red"
+                "NewUser"
         );
     }
 

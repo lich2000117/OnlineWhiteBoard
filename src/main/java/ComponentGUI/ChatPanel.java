@@ -29,8 +29,7 @@ public class ChatPanel extends JPanel {
 
         this.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
 
-        TopRightLabel = new JLabel();
-        TopRightLabel.setText(clientRMI.getUsername() + ", Welcome!");
+        TopRightLabel = new JLabel(clientRMI.getUsername() + ", Welcome!", SwingConstants.CENTER);
         this.add(TopRightLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 
         SwitchToUser = new JButton("Show Users");

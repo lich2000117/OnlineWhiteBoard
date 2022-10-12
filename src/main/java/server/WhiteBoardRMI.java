@@ -9,8 +9,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +19,11 @@ import java.util.stream.Collectors;
  */
 public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
-    public static ArrayList<User> userList = new ArrayList<User>();
+    public static List<User> userList = Collections.synchronizedList(new ArrayList<User>());
+    // to store a set of username that currently in use (including user in waiting room), remove name from it if user get approved or kicked
+    public static Set<String> waitingList = Collections.synchronizedSet(new HashSet<>());
+
+    private static User managerUser;
 
     // To store a list of history methods for new users to run.
     private ArrayList<MethodRunner> history_methods = new ArrayList<>();
@@ -29,15 +32,37 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         super();
     }
 
+    // return 0 if approved, return 1 if username already taken, return 2 if manager does not approve
     @Override
-    public boolean check_uniqueUserName(String name) throws RemoteException {
-        // check uf userName is unique, if it's not unique, DO NOT add RMI since RMI uses its username.
-        if (userList.stream().filter(user -> Objects.equals(user.name, name)).collect(Collectors.toList()).size()!=0){
-            // if username already exists
-            return false;
+    public int CheckUserNameWith_Server(String name) throws RemoteException {
+        // check if username already exists
+
+        // check uf userName is unique, or is already selected if it's not unique, DO NOT add RMI since RMI uses its username.
+        // 1. not in existing joined userList
+        // 2. not in other joining people's waiting user list
+        if ((userList.stream().filter(user -> Objects.equals(user.name, name)).collect(Collectors.toList()).size()==0)
+                && (!waitingList.contains(name))){
+            // add current username into HashSet to store it as the user is currently selecting this username
+            waitingList.add(name);
+            // ask permission from manager
+            if (managerUser!=null) {
+                // ask manager
+                if (!managerUser.client.local_managerApproveUser(name)){
+                    // if manager approve user join
+                    System.out.println("Manager does not approve");
+                    waitingList.remove(name);
+                    this.handle_broadCastChat("[System", "User: "+ name+", is NOT approved to join!]");
+                    return 2;
+                }
+            }
+            System.out.println("User can join now");
+            return 0;
         }
-        return true;
+        System.out.println("UserName already exists");
+        return 1;
     }
+
+
 
 
     @Override
@@ -55,7 +80,9 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
         // if first enter the room, make it manager
         if (userList.size()==0) {
-            usr = new User(name, newClient, UserSTATUS.MANAGER.MANAGER);}
+            usr = new User(name, newClient, UserSTATUS.MANAGER.MANAGER);
+            managerUser = usr;
+        }
         else {
             usr = new User(name, newClient);
             // if not manager, load and catchup with current progress
@@ -132,15 +159,15 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     }
 
     @Override
-    public void broadDrawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException{
+    public void broadDrawText(String text, int x, int y) throws RemoteException{
         for (User u:userList){
-            u.client.local_drawText(text, x, y, name, style, size, rgb);
+            u.client.local_drawText(text, x, y);
         }
         // add all executed methods into an arraylist of history
         history_methods.add(new MethodRunner() {
             @Override
             public void run(User u) throws RemoteException {
-                u.client.local_drawText(text, x, y, name, style ,size , rgb);
+                u.client.local_drawText(text, x, y);
             }
         });
     }
@@ -194,6 +221,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
      * @throws RemoteException
      */
     private static void AddUser_Notify(User usr) throws RemoteException {
+        waitingList.remove(usr.name); //remove username as it move from waiting list to user list
         userList.add(usr);
         ArrayList<String> names = userList.stream()
                 .map(user -> user.name)
@@ -204,6 +232,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         System.out.println("Successfully add User to server, user Status: " + usr.status);
     }
     private static void RemoveUser_Notify(User usr) throws RemoteException {
+        waitingList.remove(usr.name);
         userList.remove(usr);
         ArrayList<String> names = userList.stream()
                 .map(user -> user.name)
@@ -212,7 +241,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
             u.client.local_updateUserList(names);
         }
         // ask usr that client to quit.
-        usr.client.been_kicked();
+        usr.client.local_beenKicked("You are Kicked by Manager.");
         System.out.println("Successfully remove User from server");
     }
 }

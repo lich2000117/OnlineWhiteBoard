@@ -16,12 +16,12 @@ import java.rmi.RemoteException;
  */
 public interface iServer extends Remote {
     UserSTATUS handle_addUser(String name, String rmiURL) throws RemoteException;
-    boolean check_uniqueUserName(String name) throws RemoteException;
+    int CheckUserNameWith_Server(String name) throws RemoteException; // return 0 if approved, return 1 if username already taken, return 2 if manager does not approve
     void handle_broadCastChat(String u, String t) throws RemoteException;
     void broadDrawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException;
 
     void broadDrawPolygon(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException;
     void broadDrawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException;
-    void broadDrawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException;
+    void broadDrawText(String text, int x, int y) throws RemoteException;
     boolean kickUser(String subjectUser, String targetUser) throws RemoteException;
 }

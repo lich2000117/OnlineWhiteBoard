@@ -28,12 +28,13 @@ public interface iClient extends Remote {
     boolean request_drawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException;
     boolean local_drawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException;
 
-    boolean request_drawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException;
-    boolean local_drawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException;
+    boolean request_drawText(String text, int x, int y) throws RemoteException;
+    boolean local_drawText(String text, int x, int y) throws RemoteException;
 
     boolean request_sendChatMessage(String username, String message) throws RemoteException;
     boolean local_sendChatMessage(String username, String message) throws RemoteException;
 
     boolean local_updateUserList(ArrayList<String> userList) throws RemoteException;
-    boolean been_kicked() throws RemoteException;
+    boolean local_beenKicked(String msg) throws RemoteException;
+    boolean local_managerApproveUser(String username) throws RemoteException;
 }

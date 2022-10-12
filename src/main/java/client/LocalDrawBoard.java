@@ -49,7 +49,7 @@ public class LocalDrawBoard extends JFrame {
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-        this.setResizable(false);
+        //this.setResizable(false);
     }
 
     private void setupUI() {
@@ -96,7 +96,6 @@ public class LocalDrawBoard extends JFrame {
         leftPanel.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         leftPanel.add(spacer2, new GridConstraints(leftButtonList.length+1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        //leftPanel.setBackground(Color.BLUE);
 
         whiteBoard = new LocalDrawBoardComponent(clientRMI);
         whiteBoard.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
@@ -105,16 +104,15 @@ public class LocalDrawBoard extends JFrame {
         mainPanel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
 
         bottomPanel = new JPanel();
-        bottomPanel.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
+        bottomPanel.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(bottomPanel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
 
-        bottomButtonList = new ImageButton[4];
+        bottomButtonList = new ImageButton[3];
         bottomButtonList[0] = new ImageButton(userDirectory + "images/brushSize.png", userDirectory + "images/brushSize.png", new Dimension(F_buttonSize, F_buttonSize));
         bottomButtonList[1] = new ImageButton(userDirectory + "images/figureEmpty.png", userDirectory + "images/figureFilled.png", new Dimension(F_buttonSize, F_buttonSize));
-        bottomButtonList[2] = new ImageButton(userDirectory + "images/defaultFont.png", userDirectory + "images/defaultFont.png", new Dimension(F_buttonSize, F_buttonSize));
-        bottomButtonList[3] = new ImageColoredButton(userDirectory + "images/neutralImage.png", userDirectory + "images/neutralImage.png", new Dimension(F_buttonSize, F_buttonSize));
-        ((ImageColoredButton)bottomButtonList[3]).setColor(whiteBoard.getCurrentColor());
+        bottomButtonList[2] = new ImageColoredButton(userDirectory + "images/neutralImage.png", userDirectory + "images/neutralImage.png", new Dimension(F_buttonSize, F_buttonSize));
+        ((ImageColoredButton)bottomButtonList[2]).setColor(whiteBoard.getCurrentColor());
 
 
         setUpBottomButtonListener();
@@ -133,8 +131,6 @@ public class LocalDrawBoard extends JFrame {
         // at begining, display chatPanel only.
         mainPanel.add(chatPanel, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK |  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK |GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
-
-        bottomPanel.setVisible(true);
     }
 
     private void setUpLeftButtonListener(){
@@ -239,27 +235,12 @@ public class LocalDrawBoard extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-
-                PickFontDialog dial = new PickFontDialog(frame, whiteBoard.getCurrentFontName(), whiteBoard.getCurrentFontStyle(), whiteBoard.getCurrentFontSize());
-                String[] returnVal = dial.run();
-
-                whiteBoard.setCurrentFontName(returnVal[0]);
-                whiteBoard.setCurrentFontStyle(PickFontDialog.styleStringToInt(returnVal[1]));
-                whiteBoard.setCurrentFontSize(Integer.parseInt(returnVal[2]));
-            }
-        });
-
-        bottomButtonList[3].addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-
                 JColorChooser colorChooser = new JColorChooser(whiteBoard.getCurrentColor());
                 ActionListener onOk = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         Color c = colorChooser.getColor();
-                        ((ImageColoredButton) bottomButtonList[3]).setColor(c);
+                        ((ImageColoredButton) bottomButtonList[2]).setColor(c);
                         whiteBoard.setCurrentColor(c);
                     }
                 };
@@ -293,13 +274,31 @@ public class LocalDrawBoard extends JFrame {
         mainPanel.repaint();
     }
 
-    public void DisplayMessage(String msg){
-        JOptionPane.showMessageDialog(null, msg);
+    /**
+     * Display dialog message and check if need to close window after dialog done
+     * @param msg
+     * @param closeWindow
+     */
+    public void DisplayMessage(String msg, Boolean closeWindow){
+        int returnV = JOptionPane.showOptionDialog(this, msg, "Alert", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE, null, null, null);
+        if (closeWindow){
+            System.exit(0);
+        }
     }
 
-    public void DisableUI_WithMessage(String msg){
-        DisplayMessage(msg);
+    public void DisableUI_WithMessage(String msg, Boolean closeWindow){
+        DisplayMessage(msg, closeWindow);
         this.setEnabled(false);
+    }
+
+    /**
+     * Confirm the joining of new user, if click yes, return 1, otherwise 0
+     * @param msg
+     * @return
+     */
+    public int ConfirmWindow(String msg){
+        return JOptionPane.showConfirmDialog(this,msg, "Alert", JOptionPane.YES_NO_OPTION);
     }
 
     public static void main(String[] args) {

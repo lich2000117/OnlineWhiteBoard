@@ -57,15 +57,15 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
         try {
             if (!whiteboard.kickUser(this.username, targetuserName)){
                 // kick fail trying to kick yourself as a manager
-                clientUI.displayAlert("Cannot Kick Manager!");
+                clientUI.displayAlert("Cannot Kick Manager!", false);
                 return false;
             }
         }
         catch (Exception e){
-            System.out.println("Cannot Kick User.");
-            clientUI.displayAlert("Kick unknown Failed!");
-            e.printStackTrace();
-            return false;
+//            System.out.println("Cannot Kick User.");
+//            clientUI.displayAlert("Kick unknown Failed!", false);
+//            e.printStackTrace();
+//            return false;
         }
         try {
             whiteboard.handle_broadCastChat("[System", "User: " + targetuserName + ", was Kicked Out!]");
@@ -77,13 +77,18 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     }
 
     @Override
-    public boolean been_kicked() throws RemoteException {
-        this.clientUI.kickClient();
+    public boolean local_beenKicked(String msg) throws RemoteException {
+        this.clientUI.kickClient(msg);
         return true;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public boolean local_managerApproveUser(String username) throws RemoteException {
+        return clientUI.displayUserJoinRequest(username);
     }
 
     @Override
@@ -136,17 +141,17 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     }
 
     @Override
-    public boolean request_drawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException {
+    public boolean request_drawText(String text, int x, int y) throws RemoteException {
         // 1. ask whiteboard to draw rectangle
-        whiteboard.broadDrawText(text, x, y, name , style, size, rgb);
+        whiteboard.broadDrawText(text, x, y);
         System.out.println("Sent text to Server WhiteBoard ");
         return true;
     }
 
     @Override
-    public boolean local_drawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException {
+    public boolean local_drawText(String text, int x, int y) throws RemoteException {
         // 2. whiteboard call this function to draw local rectangle
-        clientUI.drawText(text, x , y, name, style, size, rgb);
+        clientUI.drawText(text, x , y);
         System.out.println("Called by Server to text local ");
         return true;
     }

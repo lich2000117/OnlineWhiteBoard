@@ -17,20 +17,20 @@ public class ClientUI {
     }
 
     public void drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb){
-        this.frame.getWhiteBoard().drawShape(mode, x1, y1, x2, y2, brushSize, filling, rgb, false);
+        this.frame.getWhiteBoard().drawShape(mode, x1, y1, x2, y2, brushSize, filling, rgb);
         System.out.println("Draw on Board");
     }
 
     public void drawPolygon(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb){
-        this.frame.getWhiteBoard().drawPoly(lstX, lstY, brushSize, filling, rgb, false);
+        this.frame.getWhiteBoard().drawPoly(lstX, lstY, brushSize, filling, rgb);
     }
 
     public void drawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb){
-        this.frame.getWhiteBoard().drawFree(lstX, lstY, brushSize, filling, rgb, false);
+        this.frame.getWhiteBoard().drawFree(lstX, lstY, brushSize, filling, rgb);
     }
 
-    public void drawText(String text, int x, int y, String name, int style, int size, int rgb){
-        this.frame.getWhiteBoard().drawText(text, x, y, name, style, size, rgb);
+    public void drawText(String text, int x, int y){
+        this.frame.getWhiteBoard().drawText(text, x, y);
     }
 
     public void sendChatMessage(String username, String message){
@@ -41,11 +41,16 @@ public class ClientUI {
         this.frame.getUserPanel().updateUserList(userList);
     }
 
-    public void kickClient(){
-        this.frame.DisableUI_WithMessage("You are kicked.");
+    public void kickClient(String msg){
+        this.frame.DisableUI_WithMessage(msg, true);
     }
 
-    public void displayAlert(String msg){
-        this.frame.DisplayMessage(msg);
+    public void displayAlert(String msg, Boolean closeWindow){
+        this.frame.DisplayMessage(msg, closeWindow);
+    }
+
+    public boolean displayUserJoinRequest(String userName){
+        String msg = "User: " + userName + " ask to join.";
+        return this.frame.ConfirmWindow(msg)==0;
     }
 }

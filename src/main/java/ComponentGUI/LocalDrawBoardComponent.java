@@ -22,21 +22,13 @@ public class LocalDrawBoardComponent extends JPanel {
     private ArrayList<Boolean> shapeListFilling = new ArrayList<>();
     private ArrayList<String> textList = new ArrayList<>();
     private ArrayList<Point2D> textPosList = new ArrayList<>();
-    private ArrayList<Color> colorTextList = new ArrayList<>();
-    private ArrayList<String> fontNameList = new ArrayList<>();
-    private ArrayList<Integer> fontStyleList = new ArrayList<>();
-    private ArrayList<Integer> fontSizeList = new ArrayList<>();
     private float currentBrushSize = 1;
     private Color currentColor = Color.BLACK;
     private boolean currentFilling = false;
-    private Shape tempShape = null;
 
     private ArrayList<Integer> ptsXList = new ArrayList<>();
     private ArrayList<Integer> ptsYList = new ArrayList<>();
-    private String currentText = "";
-    private String currentFontName = "Dialog";
-    private int currentFontStyle = Font.PLAIN;
-    private int currentFontSize = 14;
+    private String currentText;
     private boolean isWritting = false;
     private drawMode dMode = drawMode.DEFAULT;
     private shapeMode sMode = shapeMode.RECTANGLE;
@@ -46,7 +38,8 @@ public class LocalDrawBoardComponent extends JPanel {
     public LocalDrawBoardComponent(ClientRMI clientRMI){
         this.clientRMI = clientRMI;
         this.setPreferredSize(new Dimension(1024, 768));
-
+        this.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        this.setBackground(Color.WHITE);
 
         addKeyListener(new KeyAdapter() {
             @Override
@@ -55,18 +48,14 @@ public class LocalDrawBoardComponent extends JPanel {
                 if(!isWritting) return;
                 else if (e.getKeyChar() == KeyEvent.VK_ENTER){
                     try {
-                        clientRMI.request_drawText(currentText, x1, y1, currentFontName, currentFontStyle, currentFontSize, currentColor.getRGB());
+                        clientRMI.request_drawText(currentText, x1, y1);
                     } catch (RemoteException ex) {
                         throw new RuntimeException(ex);
                     }
                     currentText="";
                     isWritting = false;
-                } else if(e.getKeyChar() == KeyEvent.VK_BACK_SPACE){
-                    if (currentText.length() > 0) currentText = currentText.substring(0, currentText.length()-1);
-                    repaint();
-                }else{
+                } else{
                     currentText += e.getKeyChar();
-                    repaint();
                 }
             }
         });
@@ -93,18 +82,9 @@ public class LocalDrawBoardComponent extends JPanel {
                 super.mouseDragged(e);
 
                 switch (dMode){
-                    case SHAPE:
-                        x2 = e.getX();
-                        y2 = e.getY();
-
-                        drawShape(sMode, x1, y1, x2, y2, currentBrushSize, currentFilling, currentColor.getRGB(), true);
-                        break;
                     case FREE:
                         ptsXList.add(e.getX());
                         ptsYList.add(e.getY());
-
-                        drawFree(convertIntegers(ptsXList), convertIntegers(ptsYList), currentBrushSize, currentFilling, currentColor.getRGB(), true);
-                        break;
                 }
             }
 
@@ -128,8 +108,6 @@ public class LocalDrawBoardComponent extends JPanel {
                         if(SwingUtilities.isLeftMouseButton(e)){
                             ptsXList.add(e.getX());
                             ptsYList.add(e.getY());
-
-                            drawPoly(convertIntegers(ptsXList), convertIntegers(ptsYList), currentBrushSize, currentFilling, currentColor.getRGB(), true);
                         } else if(SwingUtilities.isRightMouseButton(e) && ptsXList.size() > 2){
                             ptsXList.add(e.getX());
                             ptsYList.add(e.getY());
@@ -181,16 +159,8 @@ public class LocalDrawBoardComponent extends JPanel {
     public void setCurrentColor(Color color){this.currentColor = color;}
     public boolean getCurrentFilling(){return this.currentFilling;}
     public void setCurrentFilling(boolean filling){this.currentFilling = filling;}
-    public String getCurrentFontName(){return this.currentFontName;}
-    public void setCurrentFontName(String name){this.currentFontName = name;}
-    public int getCurrentFontStyle(){return this.currentFontStyle;}
-    public void setCurrentFontStyle(int style){this.currentFontStyle = style;}
-    public int getCurrentFontSize(){return this.currentFontSize;}
-    public void setCurrentFontSize(int size){this.currentFontSize = size;}
-
     public void setDrawMode(drawMode mode){
         this.dMode = mode;
-        currentText = "";
         clearPtsList();
     }
     public void setShapeMode(shapeMode mode){this.sMode = mode;}
@@ -200,7 +170,7 @@ public class LocalDrawBoardComponent extends JPanel {
         ptsYList.clear();
     }
 
-    public void drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int colorRgb, boolean temporary){
+    public void drawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int colorRgb){
         int true_x1 = Math.min(x1,x2);
         int true_y1 = Math.min(y1,y2);
         int width=Math.abs(x1-x2);
@@ -233,33 +203,22 @@ public class LocalDrawBoardComponent extends JPanel {
         }
 
 
-        if(temporary){
-            tempShape = s;
-            //printShapeOnBoard(s, brushSize, filling, colorRgb);
-        } else{
-            tempShape = null;
-            addShapeToBoard(s, brushSize, filling, colorRgb);
-        }
+        addShapeToBoard(s, brushSize, filling, colorRgb);
         repaint();
     }
 
-    public void drawPoly(int[] xList, int[] yList, float brushSize, boolean filling, int rgb, boolean temporary){
+    public void drawPoly(int[] xList, int[] yList, float brushSize, boolean filling, int rgb){
         Point2D[] pts = new Point2D[xList.length];
         for(int i = 0; i < xList.length; i++){
             pts[i] = new Point2D.Float(xList[i], yList[i]);
         }
 
         Shape s = new PolygonShape(pts);
-
-        if(temporary){
-            tempShape = s;
-        } else{
-            addShapeToBoard(s, brushSize, filling, rgb);
-        }
+        addShapeToBoard(s, brushSize, filling, rgb);
         repaint();
     }
 
-    public void drawFree(int[] xList, int[] yList, float brushSize, boolean filling, int rgb, boolean temporary){
+    public void drawFree(int[] xList, int[] yList, float brushSize, boolean filling, int rgb){
         if(xList.length == 0) return;
 
         Path2D path = new Path2D.Double();
@@ -269,22 +228,14 @@ public class LocalDrawBoardComponent extends JPanel {
             path.lineTo(xList[i], yList[i]);
         }
 
-        if(temporary){
-            tempShape = path;
-        } else{
-            addShapeToBoard(path, brushSize, filling, rgb);
-        }
+        addShapeToBoard(path, brushSize, filling, rgb);
         repaint();
     }
 
-    public void drawText(String text, int x, int y, String name, int style, int size, int rgb){
+    public void drawText(String text, int x, int y){
         drawingTypeList.add(DrawingType.TEXT);
         textList.add(text);
         textPosList.add(new Point2D.Float(x, y));
-        colorTextList.add(new Color(rgb));
-        fontNameList.add(name);
-        fontStyleList.add(style);
-        fontSizeList.add(size);
         repaint();
     }
 
@@ -296,44 +247,31 @@ public class LocalDrawBoardComponent extends JPanel {
         shapeListColor.add(new Color(rgb));
     }
 
-    //Function used to draw on the board based on given component
-    private void printShapeOnBoard(Graphics2D g2D, Shape s, float brushSize, boolean filling, Color color){
-        g2D.setStroke(new BasicStroke(brushSize));
-        g2D.setColor(color);
-
-        if(filling) g2D.fill(s);
-        g2D.draw(s);
-    }
-
-    private void printTextOnBoard(Graphics2D g2D, String text, int x, int y, String name, int style, int size, Color color){
-        g2D.setColor(color);
-        g2D.setFont(new Font(name, style, size));
-        g2D.drawString(text, x, y);
-    }
-
     public void paint(Graphics g){
         super.paint(g);
         Graphics2D g2D = (Graphics2D) g;
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+
         int i = 0; int j = 0;
         for(DrawingType dt: drawingTypeList){
             switch (dt){
                 case SHAPE:
-                    printShapeOnBoard(g2D, shapeList.get(i), shapeListBrushSize.get(i), shapeListFilling.get(i), shapeListColor.get(i));
+                    g2D.setStroke(new BasicStroke(shapeListBrushSize.get(i)));
+                    g2D.setColor(shapeListColor.get(i));
+
+                    Shape s = shapeList.get(i);
+                    if(shapeListFilling.get(i)) g2D.fill(s);
+                    g2D.draw(s);
                     i++;
                     break;
 
                 case TEXT:
-                    printTextOnBoard(g2D, textList.get(j), (int) textPosList.get(j).getX(), (int) textPosList.get(j).getY(), fontNameList.get(j), fontStyleList.get(j), fontSizeList.get(j), colorTextList.get(j));
+                    //TODO FIX COLOR + FONT
+                    g2D.drawString(textList.get(j), (int) textPosList.get(j).getX(), (int) textPosList.get(j).getY());
                     j++;
                     break;
             }
-        }
-
-        printTextOnBoard(g2D, currentText, x1, y1, currentFontName, currentFontStyle, currentFontSize, currentColor);
-        if (tempShape != null) {
-            printShapeOnBoard(g2D, tempShape, currentBrushSize, currentFilling, currentColor);
         }
     }
 

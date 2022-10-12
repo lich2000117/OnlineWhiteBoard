@@ -43,8 +43,7 @@ public class UserPanel extends JPanel {
 
         this.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
 
-        NUserLabel = new JLabel();
-        NUserLabel.setText("Current User: 0");
+        NUserLabel = new JLabel("Current User: 0", SwingConstants.CENTER);
         this.add(NUserLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 
         SwitchToChat = new JButton("Show Chat");
@@ -87,7 +86,7 @@ public class UserPanel extends JPanel {
                 if (userName!=""){
                     if (clientRMI.request_KickUser(userName)) {
                         System.out.println("Kick user sent");
-                        JOptionPane.showMessageDialog(null, "They GONE! CYA!");
+                        JOptionPane.showMessageDialog(mainFrame, "They GONE! CYA!");
                     }
                 }
             }

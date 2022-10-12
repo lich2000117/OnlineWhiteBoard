@@ -3,6 +3,8 @@ package client;
 import ComponentGUI.JoinDialogue;
 import remote.iServer;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -17,6 +19,9 @@ import java.rmi.server.UnicastRemoteObject;
  */
 
 public class Client extends UnicastRemoteObject implements Serializable{
+    private final int USER_APPROVED = 0;
+    private final int USER_NAMETAKEN = 1;
+    private final int USER_NOT_APPROVED = 2;
     private String NamingServerIP;
     private String NamingServerPort;
     private String remoteMethodName; // we want to get all methods from whiteboardrmi server.
@@ -65,7 +70,8 @@ public class Client extends UnicastRemoteObject implements Serializable{
             if (clientRMI.addMeToWhiteBoardServer(userName, SELF_RMI_ADDRESS)){
                 System.out.println("Client RMI registered to server!");
             } else {
-                System.out.println("Client RMI FAILED to register to server!");
+                System.out.println("Client RMI FAILED to register to server! Restart and Try Again");
+                clientRMI.local_beenKicked("Connection Failed, Try Again.");
             }
         }
         catch (RemoteException | NotBoundException e) {
@@ -78,18 +84,60 @@ public class Client extends UnicastRemoteObject implements Serializable{
         }
     }
 
+    /**
+     * Method uses a while loop until server accept the username
+     * TODO manager should have a pop up message to allow that user name too.
+     * @param whiteboardRMI
+     * @throws RemoteException
+     */
     private void askForUserNamePopUp(iServer whiteboardRMI) throws RemoteException {
         String msg = "";
+        JOptionPane pane;
+        JDialog dialog;
         while(true) {
             JoinDialogue popUp = new JoinDialogue(msg);
             this.userName = popUp.getSelectedName();
-            if (whiteboardRMI.check_uniqueUserName(this.userName)) {
-                break;
+            if (this.userName==null){
+                // if user closes window without submitting anything.
+                System.exit(0);
             }
-            else {
-                msg = "UserName is already Used!";
+            if (!CheckUserNameLegal(this.userName)){
+                msg = "UserName is Not Legal, Only Chars and Numbers are accepted.";
+                continue; // continue to make user input name
             }
+
+            // let user wait using this screen
+            pane = new JOptionPane("Please Wait for Approval", JOptionPane.INFORMATION_MESSAGE,
+                    JOptionPane.PLAIN_MESSAGE, // NO Icon
+                    null,
+                    new Object[] {},  // No options
+                    null);
+            dialog = pane.createDialog("Connecting...");
+            dialog.setModalityType(Dialog.ModalityType.MODELESS);
+            dialog.setVisible(true);
+
+            // check on serverside if it is unique name
+            int res = whiteboardRMI.CheckUserNameWith_Server(this.userName);
+            switch (res) {
+                case USER_APPROVED:
+                    dialog.setVisible(false);
+                    pane.setVisible(false);
+                    dialog.dispose();
+                    return;
+                case USER_NAMETAKEN:
+                    msg = "UserName is already Used!";
+                    break;
+                case USER_NOT_APPROVED:
+                    msg = "Manager Disapproved you.";
+            }
+            dialog.setVisible(false);
+            pane.setVisible(false);
+            dialog.dispose();
         }
+    }
+
+    private boolean CheckUserNameLegal(String name){
+        return name.matches("[a-zA-Z0-9]+");
     }
 
     private iServer ConnectToServerRMI() throws NotBoundException, MalformedURLException, RemoteException {
