@@ -38,8 +38,8 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
      * @return
      */
     // return true if success
-    public boolean addMeToWhiteBoardServer(String userName, String RMI_URL) throws RemoteException {
-            this.userStatus = whiteboard.handle_addUser(userName, RMI_URL);
+    public boolean addMeToWhiteBoardServer(String userName, String clientPort) throws RemoteException {
+            this.userStatus = whiteboard.handle_addUser(userName,clientPort);
             if (this.userStatus==UserSTATUS.ERROR){
                 return false;
             }

@@ -11,6 +11,8 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -36,7 +38,6 @@ public class Client extends UnicastRemoteObject implements Serializable{
         this.whiteboard_NamingServerIP = whiteboard_NamingServerIP;
         this.NamingServerPort = NamingServerPort;
         this.remoteMethodName = "whiteboardrmi";
-        this.thisRMIName = userName;
     }
 
     public static void main(String [] args) {
@@ -49,6 +50,10 @@ public class Client extends UnicastRemoteObject implements Serializable{
 
         if (args.length==1){
             NamingServerIP = args[0];
+        }
+        if (args.length==2){
+            NamingServerIP = args[0];
+            NamingServerPort=args[1];
         }
         ConnectAtStart(NamingServerIP, NamingServerPort);
     }
@@ -93,11 +98,16 @@ public class Client extends UnicastRemoteObject implements Serializable{
         askForUserNamePopUp(whiteboardRMI);
 
         // 2. register self RMI apis to naming server and // 3. set up RMI UI
-        ClientRMI clientRMI = (ClientRMI) new ClientRMI(whiteboardRMI, userName); // 3. set up RMI UI and run gui
-        SELF_RMI_ADDRESS = "rmi://" + clientRMI.getClientHost() + ":" + this.NamingServerPort + "/" + this.thisRMIName;
-        Naming.bind(SELF_RMI_ADDRESS, clientRMI);
+        ClientRMI clientRMI = (ClientRMI) new ClientRMI(whiteboardRMI, userName);
+        // bind registry
+        Registry registry = LocateRegistry.createRegistry(Integer.parseInt(this.NamingServerPort));
+        System.out.println("This RMI name: " + thisRMIName);
+        registry.bind(this.thisRMIName, clientRMI);
+        // 3. set up RMI UI and run gui
+        //SELF_RMI_ADDRESS = "rmi://" + clientRMI.getClientHost() + ":" + this.NamingServerPort + "/" + this.thisRMIName;
+        //System.out.println("Self Address: " +SELF_RMI_ADDRESS);
         // 4. add current Client to Whiteboard RMI server so whiteboard has access to call method defined in RMI.
-        if (clientRMI.addMeToWhiteBoardServer(userName, SELF_RMI_ADDRESS)){
+        if (clientRMI.addMeToWhiteBoardServer(userName, this.NamingServerPort)){
             System.out.println("Client RMI registered to server!");
         } else {
             System.out.println("Client RMI FAILED to register to server! Restart and Try Again");
@@ -118,6 +128,7 @@ public class Client extends UnicastRemoteObject implements Serializable{
         while(true) {
             JoinDialogue popUp = new JoinDialogue(msg);
             this.userName = popUp.getSelectedName();
+            this.thisRMIName = userName;
             if (this.userName==null){
                 // if user closes window without submitting anything.
                 System.exit(0);
@@ -178,6 +189,7 @@ public class Client extends UnicastRemoteObject implements Serializable{
         System.out.println("Connecting to" + whiteboard_NamingServerIP + " : " + NamingServerPort );
         iServer whiteboardRMI = (iServer) Naming.lookup("rmi://" + this.whiteboard_NamingServerIP + ":" + this.NamingServerPort + "/" + this.remoteMethodName);
         System.out.println("connected to whiteboard RMI!");
+        System.out.println(whiteboardRMI);
         return whiteboardRMI;
     }
 
