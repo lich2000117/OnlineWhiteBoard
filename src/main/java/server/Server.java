@@ -14,6 +14,9 @@ public class Server {
         if (args.length==1){
             port = Integer.parseInt(args[0]);
         }
+        for (String s: args){
+            System.out.println(s);
+        }
         // register self RMI for clients, self restart.
         while (true) {
             try {

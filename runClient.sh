@@ -1,3 +1,3 @@
 mvn clean;
 mvn package;
-java -cp target/client-jar-with-dependencies.jar client.Client user1
+java -cp target/OnlineWhiteBoard-1.0-SNAPSHOT.jar client.Client 127.0.0.1 2000

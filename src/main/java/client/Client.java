@@ -11,6 +11,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 
 /**
  * This class Client,
@@ -38,8 +39,12 @@ public class Client extends UnicastRemoteObject implements Serializable{
 
     public static void main(String [] args) {
         String NamingServerIP = "localhost";
-        String NamingServerPort = "2000";
+        String NamingServerPort = "2005";
         // 1. Connect to server RMI
+        for (String s: args){
+            System.out.println(s);
+        }
+
         if (args.length==1){
             NamingServerIP = args[0];
         }
@@ -47,7 +52,6 @@ public class Client extends UnicastRemoteObject implements Serializable{
             NamingServerIP = args[0];
             NamingServerPort = args[1];
         }
-
         ConnectAtStart(NamingServerIP, NamingServerPort);
     }
 
@@ -172,6 +176,7 @@ public class Client extends UnicastRemoteObject implements Serializable{
      */
     private iServer ConnectToWhiteBoardRMI() throws NotBoundException, MalformedURLException, RemoteException {
         // 1. connect to WhiteBoard RMI from Naming Server
+        System.out.println("Connecting to" + NamingServerIP + " : " + NamingServerPort );
         iServer whiteboardRMI = (iServer) Naming.lookup("rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.remoteMethodName);
         System.out.println("connected to whiteboard RMI!");
         return whiteboardRMI;
