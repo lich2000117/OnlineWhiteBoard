@@ -1,10 +1,6 @@
 # OnlineWhiteBoard
 
 ## How to Run:
-
-
-
-## RMI usage:
 ```
 Run Server: java -cp target/server-jar-with-dependencies.jar server.Server
 Run Client: java -cp target/client-jar-with-dependencies.jar client.Client
@@ -20,6 +16,11 @@ Specify Port 2000 and Server Address 127.0.0.1 :
 Run Server: java -cp target/server-jar-with-dependencies.jar server.Server 2000
 Run Client: java -cp target/client-jar-with-dependencies.jar client.Client 127.0.0.1 2000
 ```
+Assume Whiteboard naming server port = local client naming server port (easier implementation, less params)
+
+
+## RMI usage:
+
 
 
 

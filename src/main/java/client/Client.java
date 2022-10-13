@@ -7,11 +7,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
 
 /**
  * This class Client,
@@ -23,15 +24,16 @@ public class Client extends UnicastRemoteObject implements Serializable{
     private final int USER_APPROVED = 0;
     private final int USER_NAMETAKEN = 1;
     private final int USER_NOT_APPROVED = 2;
-    private String NamingServerIP;
+    private String whiteboard_NamingServerIP;
+    private String local_NamingServerIP = "localhost";
     private String NamingServerPort;
     private String remoteMethodName; // we want to get all methods from whiteboardrmi server.
     private String thisRMIName = "client";
     public String userName; //static, one client can have only one username
     public String SELF_RMI_ADDRESS;  // RMI address of this client instance, so we can add this client to RMI server's object list.
 
-    protected Client(String NamingServerIP, String NamingServerPort) throws RemoteException {
-        this.NamingServerIP = NamingServerIP;
+    protected Client(String whiteboard_NamingServerIP, String NamingServerPort) throws RemoteException {
+        this.whiteboard_NamingServerIP = whiteboard_NamingServerIP;
         this.NamingServerPort = NamingServerPort;
         this.remoteMethodName = "whiteboardrmi";
         this.thisRMIName = userName;
@@ -47,10 +49,6 @@ public class Client extends UnicastRemoteObject implements Serializable{
 
         if (args.length==1){
             NamingServerIP = args[0];
-        }
-        else if(args.length==2){
-            NamingServerIP = args[0];
-            NamingServerPort = args[1];
         }
         ConnectAtStart(NamingServerIP, NamingServerPort);
     }
@@ -71,6 +69,7 @@ public class Client extends UnicastRemoteObject implements Serializable{
                 client.SetUp();
                 break;
             } catch (Exception e) {
+                e.printStackTrace();
                 // if fail to connect, ask user to retry.
                 int res = JOptionPane.showConfirmDialog(null, "WhiteBoard is not available right now, Please retry.", "Connection Error", JOptionPane.YES_NO_OPTION);
                 if (res==JOptionPane.NO_OPTION){
@@ -87,16 +86,16 @@ public class Client extends UnicastRemoteObject implements Serializable{
      * @throws NotBoundException
      * @throws RemoteException
      */
-    public void SetUp() throws MalformedURLException, NotBoundException, RemoteException {
+    public void SetUp() throws MalformedURLException, NotBoundException, RemoteException, AlreadyBoundException, ServerNotActiveException {
         iServer whiteboardRMI = ConnectToWhiteBoardRMI();
-
+        System.out.println("----------------------------------------------------------");
         // 1.1 display user dialogue check if user accept this userName
         askForUserNamePopUp(whiteboardRMI);
 
         // 2. register self RMI apis to naming server and // 3. set up RMI UI
         ClientRMI clientRMI = (ClientRMI) new ClientRMI(whiteboardRMI, userName); // 3. set up RMI UI and run gui
-        SELF_RMI_ADDRESS = "rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.thisRMIName;
-        Naming.rebind(SELF_RMI_ADDRESS, clientRMI);
+        SELF_RMI_ADDRESS = "rmi://" + clientRMI.getClientHost() + ":" + this.NamingServerPort + "/" + this.thisRMIName;
+        Naming.bind(SELF_RMI_ADDRESS, clientRMI);
         // 4. add current Client to Whiteboard RMI server so whiteboard has access to call method defined in RMI.
         if (clientRMI.addMeToWhiteBoardServer(userName, SELF_RMI_ADDRESS)){
             System.out.println("Client RMI registered to server!");
@@ -176,8 +175,8 @@ public class Client extends UnicastRemoteObject implements Serializable{
      */
     private iServer ConnectToWhiteBoardRMI() throws NotBoundException, MalformedURLException, RemoteException {
         // 1. connect to WhiteBoard RMI from Naming Server
-        System.out.println("Connecting to" + NamingServerIP + " : " + NamingServerPort );
-        iServer whiteboardRMI = (iServer) Naming.lookup("rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.remoteMethodName);
+        System.out.println("Connecting to" + whiteboard_NamingServerIP + " : " + NamingServerPort );
+        iServer whiteboardRMI = (iServer) Naming.lookup("rmi://" + this.whiteboard_NamingServerIP + ":" + this.NamingServerPort + "/" + this.remoteMethodName);
         System.out.println("connected to whiteboard RMI!");
         return whiteboardRMI;
     }
