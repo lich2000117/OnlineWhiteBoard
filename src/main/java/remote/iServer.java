@@ -24,4 +24,5 @@ public interface iServer extends Remote {
     void broadDrawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException;
     void broadDrawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException;
     boolean kickUser(String subjectUser, String targetUser) throws RemoteException;
+    boolean userLeave(String userName) throws RemoteException;
 }

@@ -10,6 +10,10 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -186,11 +190,26 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         if (user!=null){
             System.out.println("User found to be Kick");
             RemoveUser_Notify(user);
+            handle_broadCastChat("[System", "User: "+ target+", was kicked!]");
+            // ask usr that client to quit.
+            user.client.local_beenKicked("You are Kicked.");
             return true;
         }
         return false;
     }
 
+    @Override
+    public boolean userLeave(String userName) throws RemoteException {
+        User usr = userList.stream().filter(user -> Objects.equals(user.name, userName)).collect(Collectors.toList()).get(0);
+
+        if (usr!=null){
+            if (RemoveUser_Notify(usr)&&usr.status!=UserSTATUS.MANAGER){
+                handle_broadCastChat("[System", "User: "+ userName+", was left.]");
+            }
+            return true;
+        }
+        return true;
+    }
 
     // check if it's manager that require to kick someone is not a manager.
     public User checkKickble(String subject, String target){
@@ -220,7 +239,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
      * @param usr
      * @throws RemoteException
      */
-    private static void AddUser_Notify(User usr) throws RemoteException {
+    private void AddUser_Notify(User usr) throws RemoteException {
         waitingList.remove(usr.name); //remove username as it move from waiting list to user list
         userList.add(usr);
         ArrayList<String> names = userList.stream()
@@ -229,19 +248,40 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         for (User u:userList){
             u.client.local_updateUserList(names);
         }
+        handle_broadCastChat("[System", usr.status+": "+ usr.name+", has joined!]");
         System.out.println("Successfully add User to server, user Status: " + usr.status);
     }
-    private static void RemoveUser_Notify(User usr) throws RemoteException {
+    private boolean RemoveUser_Notify(User usr) throws RemoteException {
         waitingList.remove(usr.name);
         userList.remove(usr);
-        ArrayList<String> names = userList.stream()
-                .map(user -> user.name)
-                .collect(Collectors.toCollection(ArrayList::new));
-        for (User u:userList){
-            u.client.local_updateUserList(names);
+        // check if manager is left, ask everyone to leave
+        if (usr.status==UserSTATUS.MANAGER){
+//            ExecutorService executor = Executors.newCachedThreadPool();
+//
+//            // Cast the object to its class type
+//            ThreadPoolExecutor pool = (ThreadPoolExecutor) executor;
+            for (User u:userList){
+                try {
+                    u.client.local_beenKicked("Manager closed WhiteBoard! Bye.");
+                    System.out.println("Manager quit msg sent");
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            System.out.println("Manager Left!");
+            System.exit(0);
+            return true;
         }
-        // ask usr that client to quit.
-        usr.client.local_beenKicked("You are Kicked by Manager.");
-        System.out.println("Successfully remove User from server");
+        else {
+            ArrayList<String> names = userList.stream()
+                    .map(user -> user.name)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            for (User u : userList) {
+                u.client.local_updateUserList(names);
+            }
+            System.out.println("Successfully remove User from server");
+            return true;
+        }
     }
 }

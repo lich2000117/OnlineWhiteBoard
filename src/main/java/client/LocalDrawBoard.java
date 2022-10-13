@@ -4,6 +4,7 @@ import ComponentGUI.*;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import server.UserSTATUS;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -58,6 +59,28 @@ public class LocalDrawBoard extends JFrame {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.setResizable(false);
+
+        // action when user closes this window
+        addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                int res;
+                if (clientRMI.userStatus== UserSTATUS.MANAGER){
+                    res = JOptionPane.showConfirmDialog(frame, "This action will terminate WhiteBoard, Are you Sure?", "Exit Message", JOptionPane.YES_NO_OPTION);
+                }
+                else {
+                    res = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Exit Message", JOptionPane.YES_NO_OPTION);
+                }
+                if (res==JOptionPane.YES_OPTION) {
+                    clientRMI.remote_userLeave();
+                }
+                else{
+                    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                }
+            }
+        });
     }
 
     private void setupUI() {

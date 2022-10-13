@@ -44,18 +44,12 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
             e.printStackTrace();
             return false;
         }
-        try {
-            whiteboard.handle_broadCastChat("[System", "User: "+ userName+", has joined!]");
-        }
-        catch (Exception e){
-            //ignore;
-        }
         return true;
     }
 
-    public boolean request_KickUser(String targetuserName){
+    public boolean request_KickUser(String targetUserName){
         try {
-            if (!whiteboard.kickUser(this.username, targetuserName)){
+            if (!whiteboard.kickUser(this.username, targetUserName)){
                 // kick fail trying to kick yourself as a manager
                 clientUI.displayAlert("Cannot Kick Manager!", false);
                 return false;
@@ -67,18 +61,32 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
 //            e.printStackTrace();
 //            return false;
         }
-        try {
-            whiteboard.handle_broadCastChat("[System", "User: " + targetuserName + ", was Kicked Out!]");
-        }
-        catch (Exception e){
-            //ignore;
-        }
         return true;
+    }
+
+    /**
+     * Inform the server this user is leaving.
+     * @return
+     */
+    public boolean remote_userLeave(){
+        try {
+            whiteboard.userLeave(this.username);
+            System.out.println("Leave request sent to server");
+            return true;
+        } catch (RemoteException e) {
+            //e.printStackTrace();
+            // ignore
+        }
+        return false;
     }
 
     @Override
     public boolean local_beenKicked(String msg) throws RemoteException {
-        this.clientUI.kickClient(msg);
+        (new Thread() {
+            public void run() {
+                clientUI.kickClient(msg);
+            }
+        }).start();
         return true;
     }
 
