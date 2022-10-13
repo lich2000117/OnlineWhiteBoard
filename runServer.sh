@@ -1,3 +1,3 @@
 mvn clean;
 mvn package;
-java -cp target/OnlineWhiteBoard-1.0-SNAPSHOT.jar server.Server 2000
+java -cp target/server-jar-with-dependencies.jar server.Server 2005
