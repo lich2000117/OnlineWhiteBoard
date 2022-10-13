@@ -10,18 +10,23 @@ import java.rmi.registry.Registry;
 
 public class Server {
     public static void main(String args[]) {
-
-        // register self RMI for clients
-        try {
-            iServer whiteBoardRMI = new WhiteBoardRMI();
-            int port = 2000;
-            Registry registry = LocateRegistry.createRegistry(port);
-            registry.bind("whiteboardrmi", whiteBoardRMI);
-            System.out.println("Server listing on Port: "+ port);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (AlreadyBoundException e) {
-            e.printStackTrace();
+        int port = 2000;
+        if (args.length==1){
+            port = Integer.parseInt(args[0]);
+        }
+        // register self RMI for clients, self restart.
+        while (true) {
+            try {
+                iServer whiteBoardRMI = new WhiteBoardRMI();
+                Registry registry = LocateRegistry.createRegistry(port);
+                registry.bind("whiteboardrmi", whiteBoardRMI);
+                System.out.println("Server listing on Port: " + port);
+                break;
+            } catch (AlreadyBoundException e) {
+                System.out.println("RMI Server address already in use.");
+            } catch (Exception e) {
+                System.out.println("RMI Server encountered some issues.");
+            }
         }
     }
 }

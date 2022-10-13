@@ -8,11 +8,8 @@ import java.util.ArrayList;
 
 public class ClientUI {
     private LocalDrawBoard frame;
-    private iServer whiteboard;
-    private iClient clientRMI;  // use this RMI interface to interact with remote server.
 
-    public ClientUI(iServer whiteboard, ClientRMI clientRMI) {
-        this.clientRMI = clientRMI;
+    public ClientUI(ClientRMI clientRMI) {
         this.frame = new LocalDrawBoard(clientRMI);
     }
 

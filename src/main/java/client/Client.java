@@ -37,55 +37,74 @@ public class Client extends UnicastRemoteObject implements Serializable{
     }
 
     public static void main(String [] args) {
-
-        // 1. Connect to server RMI
         String NamingServerIP = "localhost";
         String NamingServerPort = "2000";
-        Client client;
-        try {
-            client = new Client(NamingServerIP, NamingServerPort);
+        // 1. Connect to server RMI
+        if (args.length==1){
+            NamingServerIP = args[0];
         }
-        catch (RemoteException e){
-            e.printStackTrace();
-            return;
+        else if(args.length==2){
+            NamingServerIP = args[0];
+            NamingServerPort = args[1];
         }
-        // 2. set up RMI registry and // 3. set up RMI UI
-        client.SetUp();
 
+        ConnectAtStart(NamingServerIP, NamingServerPort);
     }
 
-    public void SetUp(){
-        try{
-            iServer whiteboardRMI = ConnectToServerRMI();
-
-            // 1.1 display user dialogue check if user accept this userName
-            askForUserNamePopUp(whiteboardRMI);
-
-            // 2. register self RMI apis to naming server and // 3. set up RMI UI
-            ClientRMI clientRMI = (ClientRMI) new ClientRMI(whiteboardRMI, userName); // 3. set up RMI UI and run gui
-            SELF_RMI_ADDRESS = "rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.thisRMIName;
-            Naming.rebind(SELF_RMI_ADDRESS, clientRMI);
-            // 4. add current Client to Whiteboard RMI server so whiteboard has access to call method defined in RMI.
-            if (clientRMI.addMeToWhiteBoardServer(userName, SELF_RMI_ADDRESS)){
-                System.out.println("Client RMI registered to server!");
-            } else {
-                System.out.println("Client RMI FAILED to register to server! Restart and Try Again");
-                clientRMI.local_beenKicked("Connection Failed, Try Again.");
+    /**
+     * Method to connect user to RMI server and set up remote, set up whiteboard, client etc.
+     * @param NamingServerIP
+     * @param NamingServerPort
+     */
+    private static void ConnectAtStart(String NamingServerIP, String NamingServerPort) {
+        Client client;
+        // display connection dialog
+        JOptionPane.showMessageDialog(null,"Welcome to Online SharedWhiteBoard!");
+        while (true) {
+            try {
+                client = new Client(NamingServerIP, NamingServerPort);
+                // 2. set up RMI registry and // 3. set up RMI UI
+                client.SetUp();
+                break;
+            } catch (Exception e) {
+                // if fail to connect, ask user to retry.
+                int res = JOptionPane.showConfirmDialog(null, "WhiteBoard is not available right now, Please retry.", "Connection Error", JOptionPane.YES_NO_OPTION);
+                if (res==JOptionPane.NO_OPTION){
+                    System.exit(0);
+                    return;
+                }
             }
         }
-        catch (RemoteException | NotBoundException e) {
-            // TODO Message should print to GUI
-            System.out.println("Cannot Connect to RMI");
-            e.printStackTrace();
-        }
-        catch (Exception e){
-            e.printStackTrace();
+    }
+
+    /**
+     * Set up RMI component for client and whiteboard remote server.
+     * @throws MalformedURLException
+     * @throws NotBoundException
+     * @throws RemoteException
+     */
+    public void SetUp() throws MalformedURLException, NotBoundException, RemoteException {
+        iServer whiteboardRMI = ConnectToWhiteBoardRMI();
+
+        // 1.1 display user dialogue check if user accept this userName
+        askForUserNamePopUp(whiteboardRMI);
+
+        // 2. register self RMI apis to naming server and // 3. set up RMI UI
+        ClientRMI clientRMI = (ClientRMI) new ClientRMI(whiteboardRMI, userName); // 3. set up RMI UI and run gui
+        SELF_RMI_ADDRESS = "rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.thisRMIName;
+        Naming.rebind(SELF_RMI_ADDRESS, clientRMI);
+        // 4. add current Client to Whiteboard RMI server so whiteboard has access to call method defined in RMI.
+        if (clientRMI.addMeToWhiteBoardServer(userName, SELF_RMI_ADDRESS)){
+            System.out.println("Client RMI registered to server!");
+        } else {
+            System.out.println("Client RMI FAILED to register to server! Restart and Try Again");
+            clientRMI.local_beenKicked("Connection Failed, Try Again.");
         }
     }
 
     /**
      * Method uses a while loop until server accept the username
-     * TODO manager should have a pop up message to allow that user name too.
+     * DONE: manager should have a popup message to allow that user name too.
      * @param whiteboardRMI
      * @throws RemoteException
      */
@@ -135,11 +154,23 @@ public class Client extends UnicastRemoteObject implements Serializable{
         }
     }
 
+    /**
+     * Check if user name is legal.
+     * @param name
+     * @return
+     */
     private boolean CheckUserNameLegal(String name){
         return name.matches("[a-zA-Z0-9]+");
     }
 
-    private iServer ConnectToServerRMI() throws NotBoundException, MalformedURLException, RemoteException {
+    /**
+     * Connect to WhiteBoard server RMI
+     * @return
+     * @throws NotBoundException
+     * @throws MalformedURLException
+     * @throws RemoteException
+     */
+    private iServer ConnectToWhiteBoardRMI() throws NotBoundException, MalformedURLException, RemoteException {
         // 1. connect to WhiteBoard RMI from Naming Server
         iServer whiteboardRMI = (iServer) Naming.lookup("rmi://" + this.NamingServerIP + ":" + this.NamingServerPort + "/" + this.remoteMethodName);
         System.out.println("connected to whiteboard RMI!");

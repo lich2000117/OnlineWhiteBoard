@@ -25,7 +25,4 @@ public class User {
         this.status = s;
     }
 
-    public void changeStatue(UserSTATUS s){
-        this.status = s;
-    }
 }

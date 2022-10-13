@@ -10,10 +10,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -107,9 +103,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     public void handle_broadCastChat(String username, String t) throws RemoteException {
         // notify every user to update their chatbox
         for (User u:userList){
-            if (checkApproved(u)) {
-                u.client.local_sendChatMessage(username, t);
-            }
+            u.client.local_sendChatMessage(username, t);
         }
         // add all executed methods into an arraylist of history
         history_methods.add(new MethodRunner() {
@@ -176,17 +170,9 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         });
     }
 
-    // check if user is approved in the chat
-    private boolean checkApproved(User u){
-        if (u.status!= UserSTATUS.WAITING){
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public boolean kickUser(String subject, String target) throws RemoteException {
-        User user = checkKickble(subject, target);
+        User user = checkCanKick(subject, target);
         if (user!=null){
             System.out.println("User found to be Kick");
             RemoveUser_Notify(user);
@@ -199,6 +185,9 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     }
 
     @Override
+    /**
+     * Method to handle if a user wants to leave.
+     */
     public boolean userLeave(String userName) throws RemoteException {
         User usr = userList.stream().filter(user -> Objects.equals(user.name, userName)).collect(Collectors.toList()).get(0);
 
@@ -211,14 +200,15 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         return true;
     }
 
-    // check if it's manager that require to kick someone is not a manager.
-    public User checkKickble(String subject, String target){
+    /**
+     * check if it's manager that require to kick someone is not a manager.
+     */
+    public User checkCanKick(String subject, String target){
         // query the arraylist of user to get that user information.
         User targ, subj;
         try {
             targ = userList.stream().filter(user -> Objects.equals(user.name, target)).collect(Collectors.toList()).get(0);
             subj = userList.stream().filter(user -> Objects.equals(user.name, subject)).collect(Collectors.toList()).get(0);
-
         }
         catch (IndexOutOfBoundsException e){
             // user is already removed, cannot kick
@@ -256,10 +246,6 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         userList.remove(usr);
         // check if manager is left, ask everyone to leave
         if (usr.status==UserSTATUS.MANAGER){
-//            ExecutorService executor = Executors.newCachedThreadPool();
-//
-//            // Cast the object to its class type
-//            ThreadPoolExecutor pool = (ThreadPoolExecutor) executor;
             for (User u:userList){
                 try {
                     u.client.local_beenKicked("Manager closed WhiteBoard! Bye.");
@@ -268,7 +254,6 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
                     throw new RuntimeException(e);
                 }
             }
-
             System.out.println("Manager Left!");
             System.exit(0);
             return true;

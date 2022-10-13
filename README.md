@@ -1,6 +1,27 @@
 # OnlineWhiteBoard
 
+## How to Run:
+
+
+
 ## RMI usage:
+```
+Run Server: java -cp target/server-jar-with-dependencies.jar server.Server
+Run Client: java -cp target/client-jar-with-dependencies.jar client.Client
+```
+OR
+```
+bash ./runServer.sh
+bash ./runClient.sh
+```
+OR
+```
+Specify Port 2000 and Server Address 127.0.0.1 :
+Run Server: java -cp target/server-jar-with-dependencies.jar server.Server 2000
+Run Client: java -cp target/client-jar-with-dependencies.jar client.Client 127.0.0.1 2000
+```
+
+
 
 ```Want to send a chat:
     Client: call {local method} request_sendChat(){Whiteboard as w, w.brodcast_Chat() (RMI)}

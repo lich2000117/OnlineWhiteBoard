@@ -7,7 +7,6 @@ import com.intellij.uiDesigner.core.Spacer;
 import server.UserSTATUS;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
@@ -60,7 +59,14 @@ public class LocalDrawBoard extends JFrame {
         this.setVisible(true);
         this.setResizable(false);
 
-        // action when user closes this window
+        ActionOnCloseWindow(clientRMI);
+    }
+
+    /**
+     * action when user closes whole application window
+     * @param clientRMI
+     */
+    private void ActionOnCloseWindow(ClientRMI clientRMI) {
         addWindowListener(new WindowAdapter()
         {
             @Override
@@ -74,7 +80,7 @@ public class LocalDrawBoard extends JFrame {
                     res = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Exit Message", JOptionPane.YES_NO_OPTION);
                 }
                 if (res==JOptionPane.YES_OPTION) {
-                    clientRMI.remote_userLeave();
+                    clientRMI.request_userLeave();
                 }
                 else{
                     frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -83,9 +89,11 @@ public class LocalDrawBoard extends JFrame {
         });
     }
 
+    /**
+     * Set up board UI, using grid
+     */
     private void setupUI() {
         mainPanel.setLayout(new GridLayoutManager(2, 3, new Insets(10, 10, 10, 10), -1, -1));
-
 
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "png", "gif", "jpeg");
         fileChooser.setFileFilter(filter);
@@ -155,57 +163,28 @@ public class LocalDrawBoard extends JFrame {
         setJMenuBar(menuBar);
 
 
-        leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayoutManager(9, 1, new Insets(0, 0, 0, 0), -1, -1));
-        mainPanel.add(leftPanel, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        Setup_LeftPanel();
 
+        Setup_WhiteBoardDrawPart();
 
-        leftButtonList = new ImageButton[7];
-        leftButtonList[0] = new ImageButton(userDirectory + "images/defaultSquare.png", userDirectory + "images/selectedSquare.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[1] = new ImageButton(userDirectory + "images/defaultCircle.png", userDirectory + "images/selectedCircle.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[2] = new ImageButton(userDirectory + "images/defaultTriangle.png", userDirectory + "images/selectedTriangle.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[3] = new ImageButton(userDirectory + "images/defaultLine.png", userDirectory + "images/selectedLine.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[4] = new ImageButton(userDirectory +"images/defaultPolygon.png", userDirectory + "images/selectedPolygon.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[5] = new ImageButton(userDirectory + "images/defaultFree.png", userDirectory + "images/selectedFree.png", new Dimension(F_buttonSize, F_buttonSize));
-        leftButtonList[6] = new ImageButton(userDirectory + "images/defaultText.png", userDirectory + "images/selectedText.png", new Dimension(F_buttonSize, F_buttonSize));
+        Setup_BottomPanel();
 
+        Setup_ChatUserPanels();
 
+    }
 
-        setUpLeftButtonListener();
-        for(int i = 0; i < leftButtonList.length; i++) {
-            int finalI = i;
-            leftButtonList[i].addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    super.mouseClicked(e);
+    private void Setup_ChatUserPanels() {
+        // display chat/user panel
+        chatPanel = new ChatPanel(clientRMI, this);
+        userPanel = new UserPanel(clientRMI, this);
+        // at beginning, display chatPanel only.
+        mainPanel.add(chatPanel, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK |  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK |GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+    }
 
-                    for(int j = 0; j < leftButtonList.length; j++){
-                        leftButtonList[j].unselect();
-                    }
-
-                    leftButtonList[finalI].select();
-                }
-            });
-
-            leftPanel.add(leftButtonList[i], new GridConstraints(i+1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.SIZEPOLICY_FIXED, 1, GridConstraints.SIZEPOLICY_CAN_SHRINK, null, null, null, 0, false));
-        }
-
-
-        final Spacer spacer1 = new Spacer();
-        leftPanel.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        leftPanel.add(spacer2, new GridConstraints(leftButtonList.length+1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-
-        whiteBoard = new LocalDrawBoardComponent(clientRMI);
-        whiteBoard.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-
-        mainPanel.add(whiteBoard, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED | GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED | GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        mainPanel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
-
+    private void Setup_BottomPanel() {
         bottomPanel = new JPanel();
         bottomPanel.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(bottomPanel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-
 
         bottomButtonList = new ImageButton[4];
         bottomButtonList[0] = new ImageButton(userDirectory + "images/brushSize.png", userDirectory + "images/brushSize.png", new Dimension(F_buttonSize, F_buttonSize));
@@ -213,7 +192,6 @@ public class LocalDrawBoard extends JFrame {
         bottomButtonList[2] = new ImageButton(userDirectory + "images/defaultFont.png", userDirectory + "images/defaultFont.png", new Dimension(F_buttonSize, F_buttonSize));
         bottomButtonList[3] = new ImageColoredButton(userDirectory + "images/neutralImage.png", userDirectory + "images/neutralImage.png", new Dimension(F_buttonSize, F_buttonSize));
         ((ImageColoredButton)bottomButtonList[3]).setColor(whiteBoard.getCurrentColor());
-
 
         setUpBottomButtonListener();
         for(int i = 0; i < bottomButtonList.length; i++) {
@@ -224,13 +202,48 @@ public class LocalDrawBoard extends JFrame {
         bottomPanel.add(spacer3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
         bottomPanel.add(spacer4, new GridConstraints(0, bottomButtonList.length+1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+    }
 
-        // display chat/user panel
-        chatPanel = new ChatPanel(clientRMI, this);
-        userPanel = new UserPanel(clientRMI, this);
-        // at begining, display chatPanel only.
-        mainPanel.add(chatPanel, new GridConstraints(0, 2, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK |  GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK |GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+    private void Setup_WhiteBoardDrawPart() {
+        whiteBoard = new LocalDrawBoardComponent(clientRMI);
+        whiteBoard.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        mainPanel.add(whiteBoard, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED | GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED | GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        mainPanel.setBorder(BorderFactory.createLineBorder(Color.black, 3));
+    }
 
+    private void Setup_LeftPanel() {
+        leftPanel = new JPanel();
+        leftPanel.setLayout(new GridLayoutManager(9, 1, new Insets(0, 0, 0, 0), -1, -1));
+        mainPanel.add(leftPanel, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+
+        leftButtonList = new ImageButton[7];
+        leftButtonList[0] = new ImageButton(userDirectory + "images/defaultSquare.png", userDirectory + "images/selectedSquare.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[1] = new ImageButton(userDirectory + "images/defaultCircle.png", userDirectory + "images/selectedCircle.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[2] = new ImageButton(userDirectory + "images/defaultTriangle.png", userDirectory + "images/selectedTriangle.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[3] = new ImageButton(userDirectory + "images/defaultLine.png", userDirectory + "images/selectedLine.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[4] = new ImageButton(userDirectory +"images/defaultPolygon.png", userDirectory + "images/selectedPolygon.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[5] = new ImageButton(userDirectory + "images/defaultFree.png", userDirectory + "images/selectedFree.png", new Dimension(F_buttonSize, F_buttonSize));
+        leftButtonList[6] = new ImageButton(userDirectory + "images/defaultText.png", userDirectory + "images/selectedText.png", new Dimension(F_buttonSize, F_buttonSize));
+
+        setUpLeftButtonListener();
+        for(int i = 0; i < leftButtonList.length; i++) {
+            int finalI = i;
+            leftButtonList[i].addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    for(int j = 0; j < leftButtonList.length; j++){
+                        leftButtonList[j].unselect();
+                    }
+                    leftButtonList[finalI].select();
+                }
+            });
+            leftPanel.add(leftButtonList[i], new GridConstraints(i+1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.SIZEPOLICY_FIXED, 1, GridConstraints.SIZEPOLICY_CAN_SHRINK, null, null, null, 0, false));
+        }
+        final Spacer spacer1 = new Spacer();
+        leftPanel.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        leftPanel.add(spacer2, new GridConstraints(leftButtonList.length+1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     }
 
     private void setUpMenuListener(){
@@ -447,7 +460,7 @@ public class LocalDrawBoard extends JFrame {
      * @param closeWindow
      */
     public void DisplayMessage(String msg, Boolean closeWindow){
-        int returnV = JOptionPane.showOptionDialog(this, msg, "Alert", JOptionPane.DEFAULT_OPTION,
+        JOptionPane.showOptionDialog(this, msg, "System Message", JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE, null, null, null);
         if (closeWindow){
             System.exit(0);

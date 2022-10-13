@@ -28,22 +28,21 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
         super();
         this.whiteboard = whiteboard;
         this.username = username;
-        clientUI = new ClientUI(whiteboard, this);
+        clientUI = new ClientUI(this);
     }
 
+    /**
+     * Add current local client to whiteboard RMI server (subscribe to whiteboard)
+     * @param userName
+     * @param RMI_URL
+     * @return
+     */
     // return true if success
-    public boolean addMeToWhiteBoardServer(String userName, String RMI_URL){
-        try {
+    public boolean addMeToWhiteBoardServer(String userName, String RMI_URL) throws RemoteException {
             this.userStatus = whiteboard.handle_addUser(userName, RMI_URL);
             if (this.userStatus==UserSTATUS.ERROR){
                 return false;
-            };
-        }
-        catch (Exception e){
-            System.out.println("Cannot Connect to Whiteboard Server.");
-            e.printStackTrace();
-            return false;
-        }
+            }
         return true;
     }
 
@@ -54,12 +53,12 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
                 clientUI.displayAlert("Cannot Kick Manager!", false);
                 return false;
             }
+            clientUI.displayAlert("They GONE! CYA!", false);
+
         }
         catch (Exception e){
-//            System.out.println("Cannot Kick User.");
-//            clientUI.displayAlert("Kick unknown Failed!", false);
-//            e.printStackTrace();
-//            return false;
+            clientUI.displayAlert("Server unstable, kick may not be successful.",false);
+            return false;
         }
         return true;
     }
@@ -68,25 +67,24 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
      * Inform the server this user is leaving.
      * @return
      */
-    public boolean remote_userLeave(){
+    public boolean request_userLeave(){
         try {
             whiteboard.userLeave(this.username);
             System.out.println("Leave request sent to server");
             return true;
-        } catch (RemoteException e) {
-            //e.printStackTrace();
-            // ignore
+        } catch (Exception e) {
+            // ignore, user quits anyway.
         }
         return false;
     }
 
     @Override
     public boolean local_beenKicked(String msg) throws RemoteException {
-        (new Thread() {
-            public void run() {
-                clientUI.kickClient(msg);
-            }
-        }).start();
+        /**
+         * Need to start a new thread as server does not need to wait for local client to quit.
+         * if no thread, this will block server's execution.
+         */
+        (new Thread(() -> clientUI.kickClient(msg))).start();
         return true;
     }
 
@@ -95,6 +93,9 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     }
 
     @Override
+    /**
+     * Method for manager to approve user's join
+     */
     public boolean local_managerApproveUser(String username) throws RemoteException {
         return clientUI.displayUserJoinRequest(username);
     }
