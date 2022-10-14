@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.ExportException;
 import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
@@ -75,8 +76,13 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
             System.out.println("Client Address:");
             String addr = "rmi://" + getClientHost() + ":" + clientPort + "/" + name;
             System.out.println(addr);
-            newClient = (iClient)Naming.lookup(addr);
+            newClient = (iClient) Naming.lookup(addr);
+        }
+        catch (ExportException e){
+            System.out.println("Server Port is already used in local machine, try different one.");
+            return UserSTATUS.ERROR;
         } catch (RemoteException | NotBoundException | MalformedURLException e) {
+            System.out.println("Server RMI error.");
             e.printStackTrace();
             return UserSTATUS.ERROR;
         } catch (ServerNotActiveException e) {

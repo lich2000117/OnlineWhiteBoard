@@ -12,15 +12,22 @@ bash ./runClient.sh
 ```
 OR
 ```
-Specify Port 2000 and Server Address 127.0.0.1 :
+Specify Server Port 2000, self port 600 and Server Address 127.0.0.1 :
 Run Server: java -cp target/server-jar-with-dependencies.jar server.Server 2000
-Run Client: java -cp target/client-jar-with-dependencies.jar client.Client 127.0.0.1 2000
+Run Client: java -cp target/client-jar-with-dependencies.jar client.Client 127.0.0.1 2000 600
 ```
 Assume Whiteboard naming server port = local client naming server port (easier implementation, less params)
 
 
 ## RMI usage:
 
+Each Client specify a client Port, used for export client RMI methods.
+
+Whiteboard Server specify a server Port, used for export server RMI methods.
+
+Client needs server IP and port to connect to server.
+
+Server needs client port to connect to client (use getClientHost() to get client IP as well.)
 
 
 
