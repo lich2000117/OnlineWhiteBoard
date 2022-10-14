@@ -204,7 +204,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         User usr = userList.stream().filter(user -> Objects.equals(user.name, userName)).collect(Collectors.toList()).get(0);
 
         if (usr!=null){
-            if (RemoveUser_Notify(usr)&&usr.status!=UserSTATUS.MANAGER){
+            if (RemoveUser_Notify(usr)&&(usr.status!=UserSTATUS.MANAGER)){
                 handle_broadCastChat("[System", "User: "+ userName+", was left.]");
             }
             return true;
