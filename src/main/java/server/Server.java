@@ -10,9 +10,11 @@ import java.rmi.registry.Registry;
 
 public class Server {
     public static void main(String args[]) {
-        int port = 2000;
-        if (args.length==1){
-            port = Integer.parseInt(args[0]);
+        String self_IP = "192.168.0.32";
+        String self_Port = String.valueOf(2005);
+        if (args.length==2){
+            self_IP = args[0];
+            self_Port = args[1];
         }
         for (String s: args){
             System.out.println(s);
@@ -20,14 +22,16 @@ public class Server {
         // register self RMI for clients, self restart.
         while (true) {
             try {
+
                 iServer whiteBoardRMI = new WhiteBoardRMI();
-                Registry registry = LocateRegistry.createRegistry(port);
+                Registry registry = LocateRegistry.createRegistry(Integer.parseInt(self_Port));
+                System.setProperty("java.rmi.server.hostname",self_IP);
                 registry.bind("whiteboardrmi", whiteBoardRMI);
-                System.out.println("Server listing on Port: " + port);
+                System.out.println("Server listing");
+                System.out.println();
                 break;
-            } catch (AlreadyBoundException e) {
-                System.out.println("RMI Server address already in use.");
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("RMI Server encountered some issues.");
             }
         }

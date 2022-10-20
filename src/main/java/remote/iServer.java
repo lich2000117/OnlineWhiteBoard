@@ -15,7 +15,7 @@ import java.rmi.RemoteException;
  *
  */
 public interface iServer extends Remote {
-    UserSTATUS handle_addUser(String name, String clientPort) throws RemoteException;
+    UserSTATUS handle_addUser(String name, String clientIP, int clientPort) throws RemoteException;
     int CheckUserNameWith_Server(String name) throws RemoteException; // return 0 if approved, return 1 if username already taken, return 2 if manager does not approve
     void handle_broadCastChat(String u, String t) throws RemoteException;
     void broadDrawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException;

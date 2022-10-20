@@ -1,24 +1,28 @@
 # OnlineWhiteBoard
 
 ## How to Run:
+**On local Computer:**
 ```
-Run Server: java -cp target/server-jar-with-dependencies.jar server.Server
-Run Client: java -cp target/client-jar-with-dependencies.jar client.Client
+bash ./runServer.sh   # whiteboard
+bash ./runClient.sh   # users
 ```
-OR
-```
-bash ./runServer.sh
-bash ./runClient.sh
-```
-OR
-```
-Specify Server Port 2000, self port 600 and Server Address 127.0.0.1 :
-Run Server: java -cp target/server-jar-with-dependencies.jar server.Server 2000
-Run Client: java -cp target/client-jar-with-dependencies.jar client.Client 127.0.0.1 2000 600
-```
-Assume Whiteboard naming server port = local client naming server port (easier implementation, less params)
 
+_**On Remote Distributed Computers:**_
+- WhiteBoard Side:
+  - Specify WhiteBoard Server public IP and Port that is **visible to clients** to set up stub.
+  - for example, whiteboard's public IP is 192.168.0.1 and public port 2005
+```
+java -cp target/server-jar-with-dependencies.jar server.Server 192.168.0.1 2005   
+```
 
+- Client Side:
+  - Specify WhiteBoard Server public IP and Port that we need to connect.
+  - Specify Client public IP and Port that is **visible to whiteboard**.
+  - for example, whiteboard's public IP is 192.168.0.1 and public port 2005 for us to connect.
+  - for example, client's public IP is 192.168.0.4 and public port 1999.
+```
+java -cp target/client-jar-with-dependencies.jar client.Client 192.168.0.1 2005 192.168.0.4 1999
+```
 ## RMI usage:
 
 Each Client specify a client Port, used for export client RMI methods.
