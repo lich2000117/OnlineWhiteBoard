@@ -22,10 +22,9 @@ public class Server {
         // register self RMI for clients, self restart.
         while (true) {
             try {
-
+                System.setProperty("java.rmi.server.hostname",self_IP);
                 iServer whiteBoardRMI = new WhiteBoardRMI();
                 Registry registry = LocateRegistry.createRegistry(Integer.parseInt(self_Port));
-                System.setProperty("java.rmi.server.hostname",self_IP);
                 registry.bind("whiteboardrmi", whiteBoardRMI);
                 System.out.println("Server listing");
                 System.out.println();

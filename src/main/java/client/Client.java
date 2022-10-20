@@ -115,17 +115,15 @@ public class Client extends UnicastRemoteObject implements Serializable{
         // 1.1 display user dialogue check if user accept this userName
         askForUserNamePopUp(whiteboardRMI);
 
-        // 2. register self RMI apis to naming server and // 3. set up RMI UI
+        // 2. register self RMI apis to naming server
+        System.setProperty("java.rmi.server.hostname",this.local_NamingIP);  //set public IP for others to connect.
         ClientRMI clientRMI = (ClientRMI) new ClientRMI(whiteboardRMI, userName);
+        // 3. set up RMI UI and run gui
         // bind registry
         Registry registry = LocateRegistry.createRegistry(this.local_NamingPort);
-        System.out.println("This RMI name: " + thisRMIName);
-        System.setProperty("java.rmi.server.hostname",this.local_NamingIP);
         registry.rebind(this.thisRMIName, clientRMI);
+        System.out.println("This RMI name: " + thisRMIName);
         System.out.println(registry);
-        // 3. set up RMI UI and run gui
-        //SELF_RMI_ADDRESS = "rmi://" + clientRMI.getClientHost() + ":" + this.NamingServerPort + "/" + this.thisRMIName;
-        //System.out.println("Self Address: " +SELF_RMI_ADDRESS);
         // 4. add current Client to Whiteboard RMI server so whiteboard has access to call method defined in RMI.
         if (clientRMI.addMeToWhiteBoardServer(userName, this.local_NamingIP, this.local_NamingPort)){
             System.out.println("Client RMI registered to server!");
