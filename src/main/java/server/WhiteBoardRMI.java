@@ -7,6 +7,7 @@ import remote.iServer;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -85,7 +86,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
             return UserSTATUS.ERROR;
         } catch (RemoteException | NotBoundException e) {
             System.out.println("Server RMI error.");
-            e.printStackTrace();
+            //e.printStackTrace();
             return UserSTATUS.ERROR;
         }
         User usr;
@@ -114,9 +115,20 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
     @Override
     public void handle_broadCastChat(String username, String t) throws RemoteException {
         // notify every user to update their chatbox
+        List<User> lostConnectionUsers = new ArrayList<User>();
         for (User u:userList){
-            u.client.local_sendChatMessage(username, t);
+            try {
+                u.client.local_sendChatMessage(username, t);
+            }
+            catch (RemoteException e){
+                lostConnectionUsers.add(u);
+            }
         }
+        // remove lost connections user
+        for (User u:lostConnectionUsers){
+            userLeave(u.name);
+        }
+
         // add all executed methods into an arraylist of history
         history_methods.add(new MethodRunner() {
             @Override
@@ -128,8 +140,19 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
     @Override
     public void broadDrawShape(LocalDrawBoardComponent.shapeMode mode, int x1, int y1, int x2, int y2, float brushSize, boolean filling, int rgb) throws RemoteException {
+        // notify every user to update their chatbox
+        List<User> lostConnectionUsers = new ArrayList<User>();
         for (User u:userList){
-            u.client.local_drawShape(mode, x1, y1, x2, y2, brushSize, filling, rgb);
+            try {
+                u.client.local_drawShape(mode, x1, y1, x2, y2, brushSize, filling, rgb);
+            }
+            catch (RemoteException e){
+                lostConnectionUsers.add(u);
+            }
+        }
+        // remove lost connections user
+        for (User u:lostConnectionUsers){
+            userLeave(u.name);
         }
         // add all executed methods into an arraylist of history
         history_methods.add(new MethodRunner() {
@@ -142,8 +165,19 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
     @Override
     public void broadDrawPolygon(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException {
+        // notify every user to update their chatbox
+        List<User> lostConnectionUsers = new ArrayList<User>();
         for (User u:userList){
-            u.client.local_drawPolygon(lstX, lstY, brushSize, filling, rgb);
+            try {
+                u.client.local_drawPolygon(lstX, lstY, brushSize, filling, rgb);
+            }
+            catch (RemoteException e){
+                lostConnectionUsers.add(u);
+            }
+        }
+        // remove lost connections user
+        for (User u:lostConnectionUsers){
+            userLeave(u.name);
         }
         // add all executed methods into an arraylist of history
         history_methods.add(new MethodRunner() {
@@ -156,8 +190,15 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
     @Override
     public void broadDrawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException {
+        // notify every user to update their chatbox
+        List<User> lostConnectionUsers = new ArrayList<User>();
         for (User u:userList){
-            u.client.local_drawFree(lstX, lstY, brushSize, filling, rgb);
+            try {
+                u.client.local_drawFree(lstX, lstY, brushSize, filling, rgb);
+            }
+            catch (RemoteException e){
+                lostConnectionUsers.add(u);
+            }
         }
         // add all executed methods into an arraylist of history
         history_methods.add(new MethodRunner() {
@@ -170,8 +211,15 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
     @Override
     public void broadDrawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException{
+        // notify every user to update their chatbox
+        List<User> lostConnectionUsers = new ArrayList<User>();
         for (User u:userList){
-            u.client.local_drawText(text, x, y, name, style, size, rgb);
+            try {
+                u.client.local_drawText(text, x, y, name, style, size, rgb);
+            }
+            catch (RemoteException e){
+                lostConnectionUsers.add(u);
+            }
         }
         // add all executed methods into an arraylist of history
         history_methods.add(new MethodRunner() {
@@ -263,13 +311,14 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
                     u.client.local_beenKicked("Manager closed WhiteBoard! Bye.");
                     System.out.println("Manager quit msg sent");
                 } catch (RemoteException e) {
-                    throw new RuntimeException(e);
+                    continue;
                 }
             }
             System.out.println("Manager Left!");
             System.exit(0);
             return true;
         }
+        // if normal user leave, update user list
         else {
             ArrayList<String> names = userList.stream()
                     .map(user -> user.name)

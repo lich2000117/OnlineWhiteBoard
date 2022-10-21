@@ -83,8 +83,12 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
          * Need to start a new thread as server does not need to wait for local client to quit.
          * if no thread, this will block server's execution.
          */
-        (new Thread(() -> clientUI.kickClient(msg))).start();
+        (new Thread(() -> kickClientUI(msg))).start();
         return true;
+    }
+
+    public void kickClientUI(String msg){
+        clientUI.kickClient(msg);
     }
 
     public String getUsername() {

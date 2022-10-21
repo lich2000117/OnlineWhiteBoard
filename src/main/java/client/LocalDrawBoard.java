@@ -490,15 +490,15 @@ public class LocalDrawBoard extends JFrame {
             whiteBoard.savePaint();
         }
     }
-
-    public static void main(String[] args) {
-        try{
-            JFrame frame = new LocalDrawBoard(new ClientRMI(null, "Me"));
-            frame.setVisible(true);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//
+//    public static void main(String[] args) {
+//        try{
+//            JFrame frame = new LocalDrawBoard(new ClientRMI(null, "Me"));
+//            frame.setVisible(true);
+//        } catch (RemoteException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }
 
 

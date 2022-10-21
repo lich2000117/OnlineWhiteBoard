@@ -30,8 +30,9 @@ public class Server {
                 System.out.println();
                 break;
             } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("RMI Server encountered some issues.");
+                //e.printStackTrace();
+                System.out.println(e.getMessage());
+                System.out.println("RMI Server encountered some issues. Please Try Again.");
             }
         }
     }

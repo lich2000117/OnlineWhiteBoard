@@ -92,7 +92,7 @@ public class Client extends UnicastRemoteObject implements Serializable{
                 return;
             }
             catch(Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 // if fail to connect, ask user to retry.
                 int res = JOptionPane.showConfirmDialog(null, "WhiteBoard is not available right now, Please retry.", "Connection Error", JOptionPane.YES_NO_OPTION);
                 if (res==JOptionPane.NO_OPTION){

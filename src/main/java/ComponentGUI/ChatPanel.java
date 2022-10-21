@@ -88,7 +88,7 @@ public class ChatPanel extends JPanel {
         try {
             clientRMI.request_sendChatMessage(clientRMI.getUsername(), inputMsg.getText());
         } catch (RemoteException e) {
-            throw new RuntimeException(e);
+            clientRMI.kickClientUI("Lost Connection to Server");
         }
         inputMsg.setText("");
     }

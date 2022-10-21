@@ -63,7 +63,7 @@ public class LocalDrawBoardComponent extends JPanel {
                     try {
                         clientRMI.request_drawText(currentText, x1, y1, currentFontName, currentFontStyle, currentFontSize, currentColor.getRGB());
                     } catch (RemoteException ex) {
-                        throw new RuntimeException(ex);
+                        clientRMI.kickClientUI("Lost Connection to Server");
                     }
                     currentText="";
                     isWritting = false;
@@ -126,7 +126,7 @@ public class LocalDrawBoardComponent extends JPanel {
                         try {
                             clientRMI.request_drawShape(sMode, x1, y1, x2, y2, currentBrushSize, currentFilling, currentColor.getRGB());
                         } catch (RemoteException ex) {
-                            throw new RuntimeException(ex);
+                            clientRMI.kickClientUI("Lost Connection to Server");
                         }
                         break;
 
@@ -144,7 +144,7 @@ public class LocalDrawBoardComponent extends JPanel {
                             try {
                                 clientRMI.request_drawPolygon(convertIntegers(ptsXList), convertIntegers(ptsYList), currentBrushSize, currentFilling, currentColor.getRGB());
                             } catch (RemoteException ex) {
-                                throw new RuntimeException(ex);
+                                clientRMI.kickClientUI("Lost Connection to Server");
                             }
                             clearPtsList();
                         }
@@ -154,7 +154,7 @@ public class LocalDrawBoardComponent extends JPanel {
                         try {
                             clientRMI.request_drawFree(convertIntegers(ptsXList), convertIntegers(ptsYList), currentBrushSize, currentFilling, currentColor.getRGB());
                         } catch (RemoteException ex) {
-                            throw new RuntimeException(ex);
+                            clientRMI.kickClientUI("Lost Connection to Server");
                         }
                         clearPtsList();
                         break;

@@ -19,7 +19,8 @@ public class ImageColoredButton extends ImageButton{
         try{
             bufImg = ImageIO.read(new File(defaultImagePath));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            bufImg = null;
+            //throw new RuntimeException(e);
         }
     }
 
