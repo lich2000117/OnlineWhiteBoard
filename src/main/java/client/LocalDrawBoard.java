@@ -5,14 +5,21 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import server.UserSTATUS;
+import server.MethodRunner;
+import server.User;
+import server.UserSTATUS;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public class LocalDrawBoard extends JFrame {
     public final int F_buttonSize = 50;
@@ -104,11 +111,18 @@ public class LocalDrawBoard extends JFrame {
         menuFile.setMnemonic(KeyEvent.VK_ESCAPE);
         menuBar.add(menuFile);
 
+
+        //MENU RESERVER TO MANAGER
         menuNew = new JMenuItem(new AbstractAction("New") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
-        }});
+                try {
+                    clientRMI.request_cleanBoard();
+                    whiteBoard.fileName = null;
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }});
         menuNew.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         menuFile.add(menuNew);
@@ -120,8 +134,10 @@ public class LocalDrawBoard extends JFrame {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
 
-                    //TODO
+                    whiteBoard.fileName = file.getAbsolutePath();
                 }
+
+                whiteBoard.openFile();
             }
         });
         menuOpen.setAccelerator(KeyStroke.getKeyStroke(
@@ -134,7 +150,11 @@ public class LocalDrawBoard extends JFrame {
                 if(whiteBoard.fileName == null){
                     saveAs();
                 } else{
-                    whiteBoard.savePaint();
+                    try {
+                        clientRMI.ask_save_file(whiteBoard.fileName);
+                    } catch (RemoteException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         });
@@ -150,6 +170,22 @@ public class LocalDrawBoard extends JFrame {
         });
         menuSaveAs.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menuFile.add(menuSaveAs);
+
+
+        menuSaveAs = new JMenuItem(new AbstractAction("Export as png") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int returnVal = fileChooser.showSaveDialog(frame);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    String fName = fileChooser.getSelectedFile().getAbsolutePath();
+                    whiteBoard.savePaintAsPng(fName);
+                }
+            }
+        });
+
+        menuSaveAs.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_E, ActionEvent.ALT_MASK));
         menuFile.add(menuSaveAs);
 
         menuClose = new JMenuItem(new AbstractAction("Close") {
@@ -485,9 +521,34 @@ public class LocalDrawBoard extends JFrame {
         int returnVal = fileChooser.showSaveDialog(frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             whiteBoard.fileName = fileChooser.getSelectedFile().getAbsolutePath();
-            System.out.println(whiteBoard.fileName);
 
-            whiteBoard.savePaint();
+            try{
+                clientRMI.ask_save_file(whiteBoard.fileName);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void savePaint() {
+        System.out.println("Save paint");
+        ArrayList<MethodRunner> methodsLst = new ArrayList<>();
+        methodsLst.add(new MethodRunner() {
+            @Override
+            public void run(User u) throws RemoteException {
+                System.out.println("Hello world !");
+            }
+        });
+
+        try {
+            FileOutputStream myfileoutput = new FileOutputStream(new File("mytestfile"));
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(myfileoutput);
+
+            for (MethodRunner mr: methodsLst){
+                objectOutputStream.writeObject(mr);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 //

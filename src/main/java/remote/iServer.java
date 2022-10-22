@@ -1,6 +1,7 @@
 package remote;
 
 import ComponentGUI.LocalDrawBoardComponent;
+import server.MethodRunner;
 import server.UserSTATUS;
 
 import java.rmi.Remote;
@@ -23,6 +24,12 @@ public interface iServer extends Remote {
     void broadDrawPolygon(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException;
     void broadDrawFree(int[] lstX, int[] lstY, float brushSize, boolean filling, int rgb) throws RemoteException;
     void broadDrawText(String text, int x, int y, String name, int style, int size, int rgb) throws RemoteException;
+    void broadCleanBoard() throws RemoteException;
+
+    void broadOpenFile(byte[] fileBytes) throws RemoteException;
+
+
+    void sendSaveFileToManager(String filename) throws RemoteException;
     boolean kickUser(String subjectUser, String targetUser) throws RemoteException;
     boolean userLeave(String userName) throws RemoteException;
 }

@@ -4,6 +4,7 @@ import ComponentGUI.LocalDrawBoardComponent;
 import remote.iClient;
 import remote.iServer;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class ClientUI {
@@ -27,6 +28,14 @@ public class ClientUI {
 
     public void drawText(String text, int x, int y, String name, int style, int size, int rgb){
         this.frame.getWhiteBoard().drawText(text, x, y, name, style, size, rgb);
+    }
+
+    public void sendCleanBoard(){
+        this.frame.getWhiteBoard().cleanBoard();
+    }
+
+    public void saveFile(byte[] file, String filename){
+        this.frame.getWhiteBoard().saveFile(file, filename);
     }
 
     public void sendChatMessage(String username, String message){
