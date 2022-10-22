@@ -142,6 +142,7 @@ public class LocalDrawBoardComponent extends JPanel {
 
                             try {
                                 clientRMI.request_drawPolygon(convertIntegers(ptsXList), convertIntegers(ptsYList), currentBrushSize, currentFilling, currentColor.getRGB());
+                                tempShape = null;
                             } catch (RemoteException ex) {
                                 clientRMI.kickClientUI("Lost Connection to Server");
                             }
@@ -172,7 +173,6 @@ public class LocalDrawBoardComponent extends JPanel {
                         break;
                 }
 
-                tempShape = null;
                 repaint();
             }
         };

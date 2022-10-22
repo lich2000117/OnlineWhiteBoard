@@ -306,14 +306,6 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         }
     }
 
-    // check if user is approved in the chat
-    private boolean checkApproved(User u){
-        if (u.status!= UserSTATUS.WAITING){
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public boolean kickUser(String subject, String target) throws RemoteException {
         User user = checkCanKick(subject, target);
