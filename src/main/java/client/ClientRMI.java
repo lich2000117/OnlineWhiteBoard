@@ -42,6 +42,8 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
             if (this.userStatus==UserSTATUS.ERROR){
                 return false;
             }
+
+            this.clientUI.setMenuContent(userStatus);
         return true;
     }
 

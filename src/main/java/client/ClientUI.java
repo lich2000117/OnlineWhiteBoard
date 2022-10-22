@@ -3,6 +3,7 @@ package client;
 import ComponentGUI.LocalDrawBoardComponent;
 import remote.iClient;
 import remote.iServer;
+import server.UserSTATUS;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -40,6 +41,10 @@ public class ClientUI {
 
     public void sendChatMessage(String username, String message){
         this.frame.getChatPanel().addMessage(username, message);
+    }
+
+    public void setMenuContent(UserSTATUS uS){
+        this.frame.setVisibilityMenu(uS);
     }
 
     public void updateUserList(ArrayList<String> userList) {

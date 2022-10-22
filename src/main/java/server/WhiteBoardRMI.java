@@ -135,6 +135,8 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
             userLeave(u.name);
         }
 
+        //NO CHAT HISTORY
+        /*
         // add all executed methods into an arraylist of history
         history_methods.add(new MethodRunner() {
             @Override
@@ -142,6 +144,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
                 u.client.local_sendChatMessage(username, t);
             }
         });
+         */
     }
 
     @Override

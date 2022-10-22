@@ -50,7 +50,7 @@ public class LocalDrawBoardComponent extends JPanel {
     public LocalDrawBoardComponent(ClientRMI clientRMI){
         this.clientRMI = clientRMI;
         this.setPreferredSize(new Dimension(800, 600));
-        this.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         this.setBackground(Color.WHITE);
 
         addKeyListener(new KeyAdapter() {

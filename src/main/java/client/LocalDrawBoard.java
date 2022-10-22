@@ -35,6 +35,7 @@ public class LocalDrawBoard extends JFrame {
     private JMenuItem menuOpen;
     private JMenuItem menuSave;
     private JMenuItem menuSaveAs;
+    private JMenuItem menuExport;
     private JMenuItem menuClose;
     private JPanel mainPanel;
 
@@ -64,7 +65,7 @@ public class LocalDrawBoard extends JFrame {
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-        this.setResizable(false);
+        this.setResizable(true);
 
         ActionOnCloseWindow(clientRMI);
     }
@@ -100,104 +101,25 @@ public class LocalDrawBoard extends JFrame {
      * Set up board UI, using grid
      */
     private void setupUI() {
+        for (UIManager.LookAndFeelInfo i: UIManager.getInstalledLookAndFeels()){
+            System.out.println(i.getClassName());
+        }
+
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+        } catch (UnsupportedLookAndFeelException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
         mainPanel.setLayout(new GridLayoutManager(2, 3, new Insets(10, 10, 10, 10), -1, -1));
 
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "png", "gif", "jpeg");
-        fileChooser.setFileFilter(filter);
-
-        //SETUP MENU
-        menuBar = new JMenuBar();
-        menuFile = new JMenu("File");
-        menuFile.setMnemonic(KeyEvent.VK_ESCAPE);
-        menuBar.add(menuFile);
-
-
-        //MENU RESERVER TO MANAGER
-        menuNew = new JMenuItem(new AbstractAction("New") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    clientRMI.request_cleanBoard();
-                    whiteBoard.fileName = null;
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }});
-        menuNew.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-        menuFile.add(menuNew);
-
-        menuOpen = new JMenuItem(new AbstractAction("Open") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int returnVal = fileChooser.showOpenDialog(frame);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    File file = fileChooser.getSelectedFile();
-
-                    whiteBoard.fileName = file.getAbsolutePath();
-                }
-
-                whiteBoard.openFile();
-            }
-        });
-        menuOpen.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-        menuFile.add(menuOpen);
-
-        menuSave = new JMenuItem(new AbstractAction("Save") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(whiteBoard.fileName == null){
-                    saveAs();
-                } else{
-                    try {
-                        clientRMI.ask_save_file(whiteBoard.fileName);
-                    } catch (RemoteException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            }
-        });
-        menuSave.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-        menuFile.add(menuSave);
-
-        menuSaveAs = new JMenuItem(new AbstractAction("Save as") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveAs();
-            }
-        });
-        menuSaveAs.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menuFile.add(menuSaveAs);
-
-
-        menuSaveAs = new JMenuItem(new AbstractAction("Export as png") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int returnVal = fileChooser.showSaveDialog(frame);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    String fName = fileChooser.getSelectedFile().getAbsolutePath();
-                    whiteBoard.savePaintAsPng(fName);
-                }
-            }
-        });
-
-        menuSaveAs.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_E, ActionEvent.ALT_MASK));
-        menuFile.add(menuSaveAs);
-
-        menuClose = new JMenuItem(new AbstractAction("Close") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-            }
-        });
-        menuFile.add(menuClose);
-
-        setJMenuBar(menuBar);
-
+        setUpMenu();
 
         Setup_LeftPanel();
 
@@ -282,57 +204,114 @@ public class LocalDrawBoard extends JFrame {
         leftPanel.add(spacer2, new GridConstraints(leftButtonList.length+1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     }
 
-    private void setUpMenuListener(){
-        menuNew = new JMenuItem();
-        menuNew.addMouseListener(new MouseAdapter() {
+
+    public void setVisibilityMenu(UserSTATUS uS){
+        System.out.println("Hello there !");
+        switch (uS){
+            case MANAGER:
+                System.out.println("Manager !");
+                break;
+            case USER:
+                System.out.println("User !");
+                menuNew.setVisible(false);
+                menuOpen.setVisible(false);
+                menuSave.setVisible(false);
+                menuSaveAs.setVisible(false);
+                break;
+        }
+    }
+    private void setUpMenu(){
+        menuBar = new JMenuBar();
+        menuFile = new JMenu("File");
+        menuFile.setMnemonic(KeyEvent.VK_ESCAPE);
+        menuBar.add(menuFile);
+
+
+        //MENU RESERVER TO MANAGER
+        menuNew = new JMenuItem(new AbstractAction("New") {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    clientRMI.request_cleanBoard();
+                    whiteBoard.fileName = null;
+                } catch (RemoteException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }});
+        menuNew.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+        menuFile.add(menuNew);
 
-                System.out.println("");
+        menuOpen = new JMenuItem(new AbstractAction("Open") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int returnVal = fileChooser.showOpenDialog(frame);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
 
+                    whiteBoard.fileName = file.getAbsolutePath();
+                }
+
+                whiteBoard.openFile();
+            }
+        });
+        menuOpen.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        menuFile.add(menuOpen);
+
+        menuSave = new JMenuItem(new AbstractAction("Save") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(whiteBoard.fileName == null){
+                    saveAs();
+                } else{
+                    try {
+                        clientRMI.ask_save_file(whiteBoard.fileName);
+                    } catch (RemoteException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+        menuSave.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        menuFile.add(menuSave);
+
+        menuSaveAs = new JMenuItem(new AbstractAction("Save as") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveAs();
+            }
+        });
+        menuSaveAs.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menuFile.add(menuSaveAs);
+
+
+        menuExport = new JMenuItem(new AbstractAction("Export as png") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int returnVal = fileChooser.showSaveDialog(frame);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    String fName = fileChooser.getSelectedFile().getAbsolutePath();
+                    whiteBoard.savePaintAsPng(fName);
+                }
             }
         });
 
-        menuOpen = new JMenuItem();
-        menuOpen.addMouseListener(new MouseAdapter() {
+        menuExport.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_E, ActionEvent.ALT_MASK));
+        menuFile.add(menuExport);
+
+        menuClose = new JMenuItem(new AbstractAction("Close") {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-
-
+            public void actionPerformed(ActionEvent e) {
+                dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
             }
         });
+        menuFile.add(menuClose);
 
-        menuSave = new JMenuItem();
-        menuSave.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-
-
-            }
-        });
-
-        menuSaveAs = new JMenuItem();
-        menuSaveAs.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-
-
-            }
-        });
-
-        menuClose = new JMenuItem();
-        menuClose.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-
-
-            }
-        });
+        setJMenuBar(menuBar);
     }
     private void setUpLeftButtonListener(){
         leftButtonList[0].addMouseListener(new MouseAdapter() {
@@ -527,28 +506,6 @@ public class LocalDrawBoard extends JFrame {
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    private void savePaint() {
-        System.out.println("Save paint");
-        ArrayList<MethodRunner> methodsLst = new ArrayList<>();
-        methodsLst.add(new MethodRunner() {
-            @Override
-            public void run(User u) throws RemoteException {
-                System.out.println("Hello world !");
-            }
-        });
-
-        try {
-            FileOutputStream myfileoutput = new FileOutputStream(new File("mytestfile"));
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(myfileoutput);
-
-            for (MethodRunner mr: methodsLst){
-                objectOutputStream.writeObject(mr);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 //
