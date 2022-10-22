@@ -164,6 +164,36 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
     }
 
     @Override
+    public boolean request_openFile(byte[] fileBytes) throws RemoteException {
+        whiteboard.broadOpenFile(fileBytes);
+        return true;
+    }
+
+
+    @Override
+    public boolean request_cleanBoard() throws RemoteException {
+        whiteboard.broadCleanBoard();
+        return true;
+    }
+    @Override
+    public boolean local_cleanBoard() throws RemoteException {
+        clientUI.sendCleanBoard();
+        return true;
+    }
+
+    @Override
+    public boolean ask_save_file(String filename) throws RemoteException{
+        whiteboard.sendSaveFileToManager(filename);
+        return true;
+    }
+
+    @Override
+    public boolean local_save_file(byte[] file, String filename) throws RemoteException{
+        clientUI.saveFile(file, filename);
+        return true;
+    }
+
+    @Override
     public boolean local_updateUserList(ArrayList<String> userList) throws RemoteException {
         clientUI.updateUserList(userList);
         return true;

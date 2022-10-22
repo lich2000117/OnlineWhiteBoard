@@ -1,6 +1,7 @@
 package remote;
 
 import ComponentGUI.LocalDrawBoardComponent;
+import server.MethodRunner;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -33,6 +34,14 @@ public interface iClient extends Remote {
 
     boolean request_sendChatMessage(String username, String message) throws RemoteException;
     boolean local_sendChatMessage(String username, String message) throws RemoteException;
+
+    boolean request_openFile(byte[] fileBytes) throws RemoteException;
+
+    boolean request_cleanBoard() throws RemoteException;
+    boolean local_cleanBoard() throws RemoteException;
+
+    boolean ask_save_file(String filename) throws RemoteException;
+    boolean local_save_file(byte[] file, String filename) throws RemoteException;
 
     boolean local_updateUserList(ArrayList<String> userList) throws RemoteException;
     boolean been_kicked() throws RemoteException;

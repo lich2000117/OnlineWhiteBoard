@@ -1,5 +1,6 @@
 package server;
 
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -11,6 +12,6 @@ import java.rmi.RemoteException;
  *
  * It is preferred to use anonymous class in-line in the arraylist to use this method.
  */
-public interface MethodRunner extends Remote {
+public interface MethodRunner extends Remote, Serializable {
     public void run(User u) throws RemoteException;
 }

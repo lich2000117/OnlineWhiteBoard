@@ -11,8 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -172,6 +171,7 @@ public class LocalDrawBoardComponent extends JPanel {
                         break;
                 }
 
+                tempShape = null;
                 repaint();
             }
         };
@@ -342,17 +342,51 @@ public class LocalDrawBoardComponent extends JPanel {
         }
     }
 
+
+    public void cleanBoard(){
+        drawingTypeList.clear();
+        shapeList.clear();
+        shapeListBrushSize.clear();
+        shapeListColor.clear();
+        shapeListFilling.clear();
+        textList.clear();
+        textPosList.clear();
+        colorTextList.clear();
+        fontNameList.clear();
+        fontStyleList.clear();
+        fontSizeList.clear();
+
+        repaint();
+    }
+    public void openFile(){
+        try{
+            FileInputStream fo = new FileInputStream(fileName);
+            clientRMI.request_openFile(fo.readAllBytes());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void saveFile(byte[] file, String filename){
+        try{
+            FileOutputStream fo = new FileOutputStream(filename);
+            fo.write(file);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // https://stackoverflow.com/questions/8202253/saving-a-java-2d-graphics-image-as-png-file
-    public void savePaint()
+    public void savePaintAsPng(String fName)
     {
         BufferedImage bImg = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D cg = bImg.createGraphics();
         paintAll(cg);
         try {
-            if (ImageIO.write(bImg, "png", new File(fileName)))
-            {
-                System.out.println("-- saved");
-            }
+            ImageIO.write(bImg, "png", new File(fName));
         } catch (IOException e) {
             e.printStackTrace();
         }

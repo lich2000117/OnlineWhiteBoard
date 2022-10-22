@@ -4,12 +4,15 @@ import ComponentGUI.LocalDrawBoardComponent;
 import remote.iClient;
 import remote.iServer;
 
+import java.io.*;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -143,6 +146,76 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
                 u.client.local_drawText(text, x, y, name, style ,size , rgb);
             }
         });
+    }
+
+    @Override
+    public void broadCleanBoard() throws RemoteException {
+        for (User u:userList){
+            u.client.local_cleanBoard();
+        }
+    }
+
+    @Override
+    public void broadOpenFile(byte[] fileBytes) throws RemoteException {
+        broadCleanBoard();
+
+        history_methods = bytes2HistoryMethod(fileBytes);
+        for (User u:userList){
+            for (MethodRunner mr : history_methods) {
+                mr.run(u);
+            }
+        }
+    }
+
+    @Override
+    public void sendSaveFileToManager(String filename) throws RemoteException {
+        byte[] saveFileBytes = historyMethod2Bytes();
+
+        for (User u: userList){
+            if (u.status == UserSTATUS.MANAGER){
+                u.client.local_save_file(saveFileBytes, filename);
+            }
+        }
+    }
+
+    //https://stackoverflow.com/questions/2836646/java-serializable-object-to-byte-array
+    private ArrayList<MethodRunner> bytes2HistoryMethod(byte[] bytes){
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        ObjectInput in = null;
+        try {
+            in = new ObjectInputStream(bis);
+            return (ArrayList<MethodRunner>) in.readObject();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+        }
+    }
+    private byte[] historyMethod2Bytes(){
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(history_methods);
+            out.flush();
+            return bos.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                bos.close();
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+        }
     }
 
     // check if user is approved in the chat
