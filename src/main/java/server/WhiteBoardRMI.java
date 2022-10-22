@@ -60,7 +60,7 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
                     return 2;
                 }
             }
-            System.out.println("User can join now");
+            System.out.println("User is approved to join.");
             return 0;
         }
         System.out.println("UserName already exists");
@@ -79,7 +79,8 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
             System.out.println("Client Address:" + clientIP);
             Registry registry = LocateRegistry.getRegistry(clientIP, clientPort);
             newClient = (iClient) registry.lookup(name);
-            System.out.println(newClient);
+            System.out.println("\nNew Client RMI: ");
+            System.out.println(newClient + "\n");
         }
         catch (ExportException e){
             System.out.println("Server Port is already used in local machine, try different one.");
@@ -93,11 +94,11 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
 
         // if first enter the room, make it manager
         if (userList.size()==0) {
-            usr = new User(name, newClient, UserSTATUS.MANAGER.MANAGER);
+            usr = new User(name, newClient, UserSTATUS.MANAGER);
             managerUser = usr;
         }
         else {
-            usr = new User(name, newClient);
+            usr = new User(name, newClient, UserSTATUS.USER);
             // if not manager, load and catchup with current progress
             for (MethodRunner mr : history_methods) {
                 mr.run(usr);

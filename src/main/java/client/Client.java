@@ -123,7 +123,7 @@ public class Client extends UnicastRemoteObject implements Serializable{
         Registry registry = LocateRegistry.createRegistry(this.local_NamingPort);
         registry.rebind(this.thisRMIName, clientRMI);
         System.out.println("This RMI name: " + thisRMIName);
-        System.out.println(registry);
+        //System.out.println(registry);
         // 4. add current Client to Whiteboard RMI server so whiteboard has access to call method defined in RMI.
         if (clientRMI.addMeToWhiteBoardServer(userName, this.local_NamingIP, this.local_NamingPort)){
             System.out.println("Client RMI registered to server!");
