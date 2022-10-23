@@ -244,11 +244,12 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         for (User u:userList){
             u.client.local_cleanBoard();
         }
+        history_methods.clear();
     }
 
     @Override
     public void broadOpenFile(byte[] fileBytes) throws RemoteException {
-        broadCleanBoard();
+        //broadCleanBoard();
 
         history_methods = bytes2HistoryMethod(fileBytes);
         for (User u:userList){
