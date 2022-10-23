@@ -104,14 +104,8 @@ public class LocalDrawBoard extends JFrame {
     private void setupUI() {
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        } catch (UnsupportedLookAndFeelException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            // ignore, style error.
         }
 
         mainPanel.setLayout(new GridLayoutManager(2, 3, new Insets(10, 10, 10, 10), -1, -1));
@@ -232,7 +226,7 @@ public class LocalDrawBoard extends JFrame {
                     clientRMI.request_cleanBoard();
                     whiteBoard.fileName = null;
                 } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
+                    DisplayMessage("Lost Connection To Server",true);
                 }
             }});
         menuNew.setAccelerator(KeyStroke.getKeyStroke(
@@ -265,7 +259,7 @@ public class LocalDrawBoard extends JFrame {
                     try {
                         clientRMI.ask_save_file(whiteBoard.fileName);
                     } catch (RemoteException ex) {
-                        throw new RuntimeException(ex);
+                        DisplayMessage("Lost Connection To Server",true);
                     }
                 }
             }
@@ -501,7 +495,7 @@ public class LocalDrawBoard extends JFrame {
             try{
                 clientRMI.ask_save_file(whiteBoard.fileName);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                DisplayMessage("Lost Connection To Server",true);
             }
         }
     }

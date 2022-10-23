@@ -16,6 +16,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Array;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -277,10 +278,9 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
         try {
             in = new ObjectInputStream(bis);
             return (ArrayList<MethodRunner>) in.readObject();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            return new ArrayList<>();
+            //throw new RuntimeException(e);
         } finally {
             try {
                 if (in != null) {
@@ -300,7 +300,8 @@ public class WhiteBoardRMI extends UnicastRemoteObject implements iServer {
             out.flush();
             return bos.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            return new byte[0];
         } finally {
             try {
                 bos.close();

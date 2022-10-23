@@ -366,20 +366,16 @@ public class LocalDrawBoardComponent extends JPanel {
         try{
             FileInputStream fo = new FileInputStream(fileName);
             clientRMI.request_openFile(fo.readAllBytes());
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e){
+            //
         }
     }
     public void saveFile(byte[] file, String filename){
         try{
             FileOutputStream fo = new FileOutputStream(filename);
             fo.write(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e){
+            //
         }
     }
 
@@ -392,7 +388,7 @@ public class LocalDrawBoardComponent extends JPanel {
         try {
             ImageIO.write(bImg, "png", new File(fName));
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

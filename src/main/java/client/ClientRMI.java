@@ -57,6 +57,10 @@ public class ClientRMI extends UnicastRemoteObject implements iClient {
             clientUI.displayAlert("They GONE! CYA!", false);
 
         }
+        catch (RemoteException e){
+            clientUI.displayAlert("Lost Connection To Server",true);
+            return false;
+        }
         catch (Exception e){
             clientUI.displayAlert("Server unstable, kick may not be successful.",false);
             return false;
