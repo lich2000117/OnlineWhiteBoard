@@ -88,6 +88,7 @@ public class LocalDrawBoard extends JFrame {
                     res = JOptionPane.showConfirmDialog(frame, "Are you sure?", "Exit Message", JOptionPane.YES_NO_OPTION);
                 }
                 if (res==JOptionPane.YES_OPTION) {
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     clientRMI.request_userLeave();
                 }
                 else{

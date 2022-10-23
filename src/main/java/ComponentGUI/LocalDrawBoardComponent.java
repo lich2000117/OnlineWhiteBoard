@@ -323,7 +323,8 @@ public class LocalDrawBoardComponent extends JPanel {
         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int i = 0; int j = 0;
-        for(DrawingType dt: drawingTypeList){
+        for(int m=0;m<drawingTypeList.size();m++){
+            DrawingType dt = drawingTypeList.get(m);
             switch (dt){
                 case SHAPE:
                     printShapeOnBoard(g2D, shapeList.get(i), shapeListBrushSize.get(i), shapeListFilling.get(i), shapeListColor.get(i));
