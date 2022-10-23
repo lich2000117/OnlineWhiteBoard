@@ -30,7 +30,7 @@ public class LocalDrawBoardComponent extends JPanel {
     private ArrayList<String> fontNameList = new ArrayList<>();
     private ArrayList<Integer> fontStyleList = new ArrayList<>();
     private ArrayList<Integer> fontSizeList = new ArrayList<>();
-    private float currentBrushSize = 1;
+    private float currentBrushSize = 2.5f;
     private Color currentColor = Color.BLACK;
     private boolean currentFilling = false;
     private Shape tempShape = null;
@@ -345,6 +345,8 @@ public class LocalDrawBoardComponent extends JPanel {
 
 
     public void cleanBoard(){
+        tempShape = null;
+
         drawingTypeList.clear();
         shapeList.clear();
         shapeListBrushSize.clear();

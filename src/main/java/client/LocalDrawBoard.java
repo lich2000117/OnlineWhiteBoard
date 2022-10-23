@@ -101,10 +101,6 @@ public class LocalDrawBoard extends JFrame {
      * Set up board UI, using grid
      */
     private void setupUI() {
-        for (UIManager.LookAndFeelInfo i: UIManager.getInstalledLookAndFeels()){
-            System.out.println(i.getClassName());
-        }
-
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
         } catch (UnsupportedLookAndFeelException e) {
